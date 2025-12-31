@@ -244,18 +244,21 @@ class Window(QtWidgets.QMainWindow):
     def loadItem(self):
         if self.DataTabs.currentIndex() == 1:
             selection = self.DropsTreeWidget.currentItem()
+        elif self.DataTabs.currentIndex() == 2:
+            selection = self.ItemTreeView.currentItem()
 
-            try:
-                category = selection.data(0, QtCore.Qt.UserRole)
-                itemid = selection.data(0, QtCore.Qt.UserRole + 1)
+        try:
+            category = selection.data(0, QtCore.Qt.UserRole)
+            itemid = selection.data(0, QtCore.Qt.UserRole + 1)
+            print(category, itemid)
 
-                if itemid and category:
-                    self.setupItemTree()
-                    self.parseItemInfo(category, itemid)
+            if itemid and category:
+                self.setupItemTree()
+                self.parseItemInfo(category, itemid)
 
-            except AttributeError:
-                self.showError("This item has no stored data")
-                return
+        except AttributeError:
+            self.showError("This item has no stored data")
+            return
 
     def setupItemTree(self):
         self.ItemTreeView.clear()
@@ -272,8 +275,8 @@ class Window(QtWidgets.QMainWindow):
     def populateItemChances(self, data, parent):
         if isinstance(data, dict):
             if 'ID' in data and 'Weight' in data:
-                leaf = QtWidgets.QTreeWidgetItem([str(data['ID']), str(data['Weight'])])
-                leaf.setData(0, QtCore.Qt.UserRole, data['ID'])
+                leaf = QtWidgets.QTreeWidgetItem([str(data['Name']), str(data['Weight'])])
+                leaf.setData(0, QtCore.Qt.UserRole+1, data['ID'])
                 parent.addChild(leaf)
             else:
                 for key, value in data.items():

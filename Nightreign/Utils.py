@@ -114,7 +114,7 @@ class NightreignFunctions():
     def handleTables(tables, prefix, TableSource, NameSource, effectLogic: bool = False):
         if not tables:
             return {}
-        
+
         Possibilities = {}
         for tableID in tables:
             if tableID:
@@ -124,7 +124,7 @@ class NightreignFunctions():
     @staticmethod
     def parseEntryChances(table: int, TableSource: dict, NameSource: dict, default: str | None = None, effectLogic: bool = False):
         if default and not table:
-            return {'ID': default, 'Weight': '100%'}
+            return {'Name': default, 'ID': table['ID'], 'Weight': '100%'}
 
         table = copy.deepcopy(TableSource[table])
         table = [entry for entry in table if entry['ID'] != 0 and entry['Weight'] != 0]
@@ -136,7 +136,7 @@ class NightreignFunctions():
             else:
                 name = NameSource[Effects.AttachEffects[entry['ID']]['TextID']]
 
-            entry['ID'] = name
+            entry['Name'] = name
             entry['Weight'] = f"{(entry['Weight']/max_weight*100):.2f}%"
 
         return table
