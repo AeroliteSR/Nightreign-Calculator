@@ -6,6 +6,16 @@ __pycache__/
 # C extensions
 *.so
 
+Fix.py
+todo
+ui.py
+datastuff.txt
+FetchData.py
+table groups fix.py
+calc.ui
+CSVS/
+.gitignore
+
 # Distribution / packaging
 .Python
 build/
