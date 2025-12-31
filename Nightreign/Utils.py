@@ -82,76 +82,61 @@ class NightreignFunctions():
     def getWeaponInfo(weapon_id: int, effectTables: None | list = None, magicTables: None | list = None, ash_table_override: None | int = None):
         output = {}
         data = Weapons.Weapons.get(weapon_id, None)
-        if data:
-            output['Weapon Type'] = data['Type']
-            output['Rarity'] = data['Rarity']
-            output['Attribute'] = data['Attribute']
-            ash_dflt = Names.AshOfWar[data['Default Ash']]
-            output["Default Ash of War"] = ash_dflt
-            attach_effect = data['Attach Effect']
-            if attach_effect != -1:
-                output['Attached Effect'] = Names.AttachEffects[attach_effect]
-            output['Physical Damage'] = data['Physical Damage']
-            output['Magic Damage'] = data['Magic Damage']
-            output['Fire Damage'] = data['Fire Damage']
-            output['Lightning Damage'] = data['Lightning Damage']
-            output['Stamina Damage'] = data['Stamina Damage']
-            output['Poise Damage'] = data['Poise Damage']
-            output['Revive Damage'] = data['Revive Damage']
-            output["Crit Damage Multiplier"] = f'{data['Crit Multiplier']}x'
+        if not data:
+            return None
+        
+        # keep at top of list
+        output['Weapon Type'] = data['Weapon Type']
+        output['Rarity'] = data['Rarity']
+        output['Attribute'] = data['Attribute']
+        ash_dflt = Names.AshOfWar[data['Default Ash of War']]
+        output["Default Ash of War"] = ash_dflt
+        atch_effect = data['Attach Effect']
+        if atch_effect:
+            output['Attach Effect'] = Names.AttachEffects[atch_effect]
+        else:
+            output['Attach Effect'] = 'None'
+        output["Crit Damage Multiplier"] = f'{data['Crit Damage Multiplier']}x'
+        # will be popped and placed at the bottom anyway
+        ash_table = ash_table_override or data["Ash Table"]
+        output['Possible Ashes of War'] = NightreignFunctions.parseEntryChances(ash_table, Weapons.AshOfWarTables, Names.AshOfWar, ash_dflt)
+        output['Possible Effects'] = NightreignFunctions.handleTables(effectTables, "Attach Effect Table", Effects.AttachEffectTables, Names.AttachEffects, True)
+        output['Possible Spells'] = NightreignFunctions.handleTables(magicTables, "Magic Table", Magic.MagicTables, Names.Magic)
 
-            ash_table = ash_table_override or data["Ash Table"]
-            output['Possible Ashes of War'] = NightreignFunctions.parseAshesChance(ash_table, ash_dflt)
+        # goes in stored order
+        for k in data.keys():
+            if k not in output and k != "Ash Table":
+                output[k] = data[k]
 
-            if effectTables:
-                PossibleEffects = {}
-                for etableID in effectTables:
-                    if etableID:
-                        PossibleEffects[f'Attach Effect Table {etableID}'] = NightreignFunctions.parseEffectChance(etableID)
-                output['Possible Effects'] = PossibleEffects
-
-            if magicTables:
-                PossibleSpells = {}
-                for mtableID in magicTables:
-                    if mtableID:
-                        PossibleSpells[f'Magic Table {mtableID}'] = NightreignFunctions.parseSpellChance(mtableID)
-                output['Possible Spells'] = PossibleSpells
-
-            return output
+        return output
         
     @staticmethod
-    def parseSpellChance(spell_table: int):
-        table = copy.deepcopy(Magic.MagicTables[spell_table])
-        max_weight = sum([entry['Weight'] for entry in table])
+    def handleTables(tables, prefix, TableSource, NameSource, effectLogic: bool = False):
+        if not tables:
+            return {}
         
-        for entry in table:
-            entry['ID'] = Names.Magic[entry['ID']]
-            entry['Weight'] = f"{(entry['Weight']/max_weight*100):.2f}%"
-
-        return table
+        Possibilities = {}
+        for tableID in tables:
+            if tableID:
+                Possibilities[f'{prefix} {tableID}'] = NightreignFunctions.parseEntryChances(table=tableID, TableSource=TableSource, NameSource=NameSource, effectLogic=effectLogic)
+        return Possibilities
         
     @staticmethod
-    def parseEffectChance(effect_table: int):
-        table = copy.deepcopy(Effects.AttachEffectTable[effect_table])
+    def parseEntryChances(table: int, TableSource: dict, NameSource: dict, default: str | None = None, effectLogic: bool = False):
+        if default and not table:
+            return {'ID': default, 'Weight': '100%'}
+
+        table = copy.deepcopy(TableSource[table])
         table = [entry for entry in table if entry['ID'] != 0 and entry['Weight'] != 0]
         max_weight = sum([entry['Weight'] for entry in table])
         
         for entry in table:
-            entry['ID'] = Names.AttachEffects[Effects.AttachEffects[entry['ID']]['TextID']]
-            entry['Weight'] = f"{(entry['Weight']/max_weight*100):.2f}%"
+            if not effectLogic:
+                name = NameSource[entry['ID']]
+            else:
+                name = NameSource[Effects.AttachEffects[entry['ID']]['TextID']]
 
-        return table
-    
-    @staticmethod
-    def parseAshesChance(ash_table: int, default_ash: str):
-        if ash_table == -1:
-            return {'ID': default_ash, 'Weight': '100%'}
-        
-        table = copy.deepcopy(Weapons.AshOfWarTables[ash_table])
-        max_weight = sum([entry['Weight'] for entry in table])
-        
-        for entry in table:
-            entry['ID'] = Names.AshOfWar[entry['ID']]
+            entry['ID'] = name
             entry['Weight'] = f"{(entry['Weight']/max_weight*100):.2f}%"
 
         return table
