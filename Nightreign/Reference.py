@@ -35,6 +35,12 @@ ItemCategories = {
     7: "Item Table"
 }
 
+WeaponEffectCategories = {
+    1: "Ash of War",
+    2: "Attach Effect",
+    3: "Spell"
+}
+
 PlayerClass = {
     0: "Any",
     1: "Wylder",
@@ -216,4 +222,74 @@ BehaviourReferenceType = {
     0: "Attack",
     1: "Bullet",
     2: "Speffect"
+}
+
+AttackTypeAttribute = {
+None: None, # JiC
+0: "None",
+1: "Full Moon Sorcery",
+2: "Carian Sword Sorcery",
+3: "Glintblade Sorcery",
+4: "Stonedigger Sorcery",
+5: "Crystalian Sorcery",
+6: "Azur Academy Sorcery",
+7: "Lusat Academy Sorcery",
+8: "Magma Sorcery",
+9: "Thorn Sorcery",
+10: "Death Sorcery",
+11: "Gravity Sorcery",
+12: "Night Sorcery",
+13: "Cold Sorcery",
+14: "Azur Primeval Sorcery",
+15: "Lusat Primeval Sorcery",
+16: "Ymir Sorcery",
+20: "Blackflame Incantation",
+21: "Giantsflame Incantation",
+22: "Dragon Cult Incantation",
+23: "Bestial Incantation",
+24: "Golden Order Incantation",
+25: "Dragon Communion Incantation",
+26: "Frenzied Flame Incantation",
+27: "Godslayer Incantation",
+28: "Aspect of the Crucible Incantation",
+31: "Bear Incantation",
+32: "Guardian Spirit Sorcery",
+33: "Messmer Incantation",
+34: "Miquella Incantation",
+35: "Divine Bird Incantation",
+36: "Inquisitor Sorcery",
+100: "Charged Heavy Attack",
+101: "Horseback Attack",
+102: "Jump Attack",
+103: "Guard Counter Attack",
+104: "Final Chain Attack",
+105: "Ammunition Attack",
+106: "Roar Attack",
+107: "Breath Attack",
+108: "Thrown Pot Item Attack",
+109: "Perfume Item Attack",
+110: "Charged Spell Attack",
+111: "Charged Skill Attack",
+112: "Skill Attack",
+113: "Ranged Skill Attack",
+114: "Vapor Attack",
+116: "Shriek of Milos",
+117: "Wraith Attack",
+118: "Ammunition On-Hit Attack",
+119: "Thrown Item Attack",
+120: "Two Handed Attack",
+121: "Backstep / Rolling Attack",
+122: "Dash Attack",
+123: "Magma Attack",
+124: "Storm Attack",
+125: "Divine Beast Frost Stomp Attack",
+127: "Stomp / Kick Attack",
+128: "Unused Attack",
+129: "Dance Attack",
+130: "Messmer Skill Attack",
+131: "Hefty Thrown Pot Item Attack",
+132: "Blood Attack",
+133: "Lightning Skill Attack",
+134: "Redmane Attack",
+135: "Igon's Harpoon Attack"
 }

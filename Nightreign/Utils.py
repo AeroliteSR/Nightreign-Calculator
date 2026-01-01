@@ -36,6 +36,7 @@ class CalcFunctions():
 class NightreignFunctions():
     @staticmethod
     def getStats(enemy: int = 20402100, players: int = 1, time: int = 0, depth: int = 0, mutation: bool = False):
+        """One day ill make this function less messy and hardcoded"""
         baseStats = Enemy.Stats[enemy]
         hp = baseStats['Health']
         dmg, stamDmg = 1, 1
@@ -79,6 +80,36 @@ class NightreignFunctions():
         return output
     
     @staticmethod
+    def getSkillInfo(category: str, itemId: int):
+        output = {}
+        if category == 'Ash of War':
+            data = Weapons.AshOfWar.get(itemId, None)
+            output['Name'] = Names.AshOfWar.get(data['Name'], None)
+            output['Affinity'] = Reference.WeaponAffinity.get(data['Affinity'], None)
+
+        elif category == 'Attach Effect':
+            data = Effects.AttachEffects.get(itemId, None)
+            output['Name'] = Names.AttachEffects.get(data.pop('TextID'), None) # remove so it isnt added later
+            value = data['Value']
+            isP = data.pop('Is Percentage')
+            if isP:
+                value = f"{value}%"
+            output['Value'] = value
+
+        elif category == 'Magic':
+            data = Magic.Magic.get(itemId, None)
+            output['Name'] = Names.Magic[itemId]
+            output['Type'] = Reference.MagicType[data['Type']]
+            output['Primary Category'] = Reference.AttackTypeAttribute[data['Primary Category']]
+            output['Secondary Category'] = Reference.AttackTypeAttribute[data['Secondary Category']]
+
+        for k in data.keys():
+            if k not in output:
+                output[k] = data[k]
+
+        return output
+
+    @staticmethod
     def getWeaponInfo(weapon_id: int, effectTables: None | list = None, magicTables: None | list = None, ash_table_override: None | int = None):
         output = {}
         data = Weapons.Weapons.get(weapon_id, None)
@@ -89,8 +120,8 @@ class NightreignFunctions():
         output['Weapon Type'] = data['Weapon Type']
         output['Rarity'] = data['Rarity']
         output['Attribute'] = data['Attribute']
-        ash_dflt = Names.AshOfWar[data['Default Ash of War']]
-        output["Default Ash of War"] = ash_dflt
+        ash_dflt = data['Default Ash of War']
+        output["Default Ash of War"] = Names.AshOfWar[ash_dflt]
         atch_effect = data['Attach Effect']
         if atch_effect:
             output['Attach Effect'] = Names.AttachEffects[atch_effect]
@@ -100,44 +131,46 @@ class NightreignFunctions():
         # will be popped and placed at the bottom anyway
         ash_table = ash_table_override or data["Ash Table"]
         output['Possible Ashes of War'] = NightreignFunctions.parseEntryChances(ash_table, Weapons.AshOfWarTables, Names.AshOfWar, ash_dflt)
-        output['Possible Effects'] = NightreignFunctions.handleTables(effectTables, "Attach Effect Table", Effects.AttachEffectTables, Names.AttachEffects, True)
-        output['Possible Spells'] = NightreignFunctions.handleTables(magicTables, "Magic Table", Magic.MagicTables, Names.Magic)
+        output['Possible Effects'] = NightreignFunctions.handleTables(effectTables, "Attach Effect Table", Effects.AttachEffectTables, Names.AttachEffects,'Attach Effect', True)
+        output['Possible Spells'] = NightreignFunctions.handleTables(magicTables, "Magic Table", Magic.MagicTables, Names.Magic, ItemType='Magic')
 
         # goes in stored order
         for k in data.keys():
-            if k not in output and k != "Ash Table":
+            if k not in output and k != "Ash Table": # skip cuz irrelevant info
                 output[k] = data[k]
 
         return output
         
     @staticmethod
-    def handleTables(tables, prefix, TableSource, NameSource, effectLogic: bool = False):
+    def handleTables(tables, prefix, TableSource, NameSource, ItemType: str, effectLogic: bool = False):
         if not tables:
             return {}
 
         Possibilities = {}
         for tableID in tables:
             if tableID:
-                Possibilities[f'{prefix} {tableID}'] = NightreignFunctions.parseEntryChances(table=tableID, TableSource=TableSource, NameSource=NameSource, effectLogic=effectLogic)
+                Possibilities[f'{prefix} {tableID}'] = NightreignFunctions.parseEntryChances(table=tableID, TableSource=TableSource, NameSource=NameSource, ItemType=ItemType, effectLogic=effectLogic)
         return Possibilities
         
     @staticmethod
-    def parseEntryChances(table: int, TableSource: dict, NameSource: dict, default: str | None = None, effectLogic: bool = False):
+    def parseEntryChances(table: int, TableSource: dict, NameSource: dict, default: int | None = None, ItemType: str = 'Ash of War', effectLogic: bool = False):
         if default and not table:
-            return {'Name': default, 'ID': table['ID'], 'Weight': '100%'}
+            return {'Name': NameSource[default], 'ID': default, 'Weight': '100%', 'Category': 'Ash of War'}
 
         table = copy.deepcopy(TableSource[table])
         table = [entry for entry in table if entry['ID'] != 0 and entry['Weight'] != 0]
         max_weight = sum([entry['Weight'] for entry in table])
         
         for entry in table:
+            id = entry['ID']
             if not effectLogic:
-                name = NameSource[entry['ID']]
+                name = NameSource[id]
             else:
-                name = NameSource[Effects.AttachEffects[entry['ID']]['TextID']]
+                name = NameSource[Effects.AttachEffects[id]['TextID']]
 
             entry['Name'] = name
             entry['Weight'] = f"{(entry['Weight']/max_weight*100):.2f}%"
+            entry['Category'] = ItemType
 
         return table
 
@@ -206,14 +239,14 @@ class NightreignFunctions():
                         target = weapon.get('Weapon', None)
                         rarity = Weapons.Weapons.get(target, None).get('Rarity', None)
                         entry["Name"] = Names.Weapon.get(target, f"Unknown C-Weapon ({item_id})")
-                        entry["Rarity"] = Reference.Rarities.get(rarity, "Undefined")
+                        entry["Rarity"] = rarity
 
                 elif category == 5:
                     entry["Name"] = Names.Armor.get(item_id, f"Unknown Relic ({item_id})")
 
                 elif category == 1:
                     if item_id in Effects.PermanentBuffs:
-                        entry['Name'] = Names.PermanentBuffs.get(item_id, f'Unknown Effect ({item_id})')
+                        entry['Name'] = Effects.PermanentBuffs[item_id].get('Name', f'Unknown Effect ({item_id})')
                         entry['Rarity'] = "PermBuff"
                     else:
                         entry['Name'] = Names.Goods.get(item_id, f'Unknown Item ({item_id})')

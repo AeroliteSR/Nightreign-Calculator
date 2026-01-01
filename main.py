@@ -1,6 +1,6 @@
 #GUI Reqs
 from PyQt5 import QtGui, QtWidgets, QtCore, QtWebEngineWidgets
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QListWidgetItem, QTreeWidgetItem
 from PyQt5.QtGui import QBrush, QColor
 from PyQt5.QtCore import QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineSettings
@@ -77,21 +77,23 @@ class Window(QtWidgets.QMainWindow):
             self.EnemyComboBox.setItemText(index, QtCore.QCoreApplication.translate("Form", f"{i}")) # add all enemies to the combobox
         self.EnemyComboBox.setCurrentIndex(-1)
 
+    def createUnselectableItem(self, text, itemType):
+        item = itemType(text)
+        item.setFlags(item.flags() & ~QtCore.Qt.ItemIsSelectable)
+        return item
+
     def parseEnemy(self):
         enemy = self.enemyIdLineEdit.text()
         if not enemy or enemy == '': # if override field is empty
             try:
-                enemy = self.EnemyComboBox.currentText() # fetch from dropdown
+                enemy = self.EnemyComboBox.currentData() # fetch from dropdown
             except:
                 return False
             
-        if not enemy.isdigit():
-            self.showError("Please select a valid enemy")
-            self.enemyIdLineEdit.clear()
-            return False
-            
-        enemy = int(enemy)
-        if enemy not in Enemy.Stats: # if enemy doesnt exist
+        try:
+            if not isinstance(enemy, int):
+                enemy = int(enemy)
+        except:
             self.showError("Please select a valid enemy")
             self.enemyIdLineEdit.clear()
             return False
@@ -101,10 +103,11 @@ class Window(QtWidgets.QMainWindow):
     def parseStats(self, enemy, mode, time, players, mutated):
         result = self.Functions.getStats(enemy=enemy, players=players, depth=mode, time=time, mutation=mutated)
         name = Names.Character.get(Enemy.NameIDs.get(enemy, None), Enemy.Stats[enemy]['Type'])
-        self.StatsListWidget.addItem(name+'\n')
+        self.StatsListWidget.addItem(self.createUnselectableItem(text=name+'\n', itemType=QListWidgetItem))
 
         for key, val in result.items():
-            self.StatsListWidget.addItem(f"{key} - {val}")
+            item = self.createUnselectableItem(text=f'{key} - {val}', itemType=QListWidgetItem)
+            self.StatsListWidget.addItem(item)
 
     def parseDrops(self, enemy, mutated):
         data = self.Functions.getDrops(enemy=enemy, mutated=mutated)
@@ -160,7 +163,11 @@ class Window(QtWidgets.QMainWindow):
                 pass
 
             if chance > 0: # or chance == 0 # for debug
-                chance = f"{chance * 100:.2f}%"
+                temp_chance = f"{chance * 100:.2f}%"
+                if temp_chance == "0.00%":
+                    chance = f"{chance * 100:.3f}%"
+                else:
+                    chance = temp_chance # quick check for if chance is less than 0.01, in which case give an extra point of precision
 
                 tree_item = QtWidgets.QTreeWidgetItem([name, chance, count, char, discovery])
                 tree_item.setForeground(0, QBrush(QColor(color)))
@@ -190,6 +197,9 @@ class Window(QtWidgets.QMainWindow):
             subject = self.DropsTreeWidget
         elif self.DataTabs.currentIndex() == 2:
             subject = self.ItemTreeView
+        else:
+            self.showError("Current tab has no trees to expand/collapse")
+            return
 
         count = subject.topLevelItemCount()
 
@@ -206,9 +216,12 @@ class Window(QtWidgets.QMainWindow):
     
     def parseItemInfo(self, category, itemid):
         if category == 2: # weapons
+            self.setupItemTree() # clear and reset
             name = Names.Weapon[itemid]
             data = self.Functions.getWeaponInfo(itemid)
+
         elif category == 6: # custom weapons
+            self.setupItemTree() # clear and reset
             WeaponData = Weapons.CustomWeapons[itemid]
             weaponId = WeaponData['Weapon']
             name = Names.Weapon[weaponId]
@@ -216,6 +229,11 @@ class Window(QtWidgets.QMainWindow):
             AtchEffTables = WeaponData['Attach Effect Tables']
             MagicTables = WeaponData['Magic Tables']
             data = self.Functions.getWeaponInfo(weaponId, ash_table_override=table, effectTables=AtchEffTables, magicTables=MagicTables)
+
+        elif category in ['Ash of War', 'Attach Effect', 'Magic']: # custom types
+            data = self.Functions.getSkillInfo(category=category, itemId=itemid)
+            self.writeExtraStats(data)
+            return
 
         else:
             self.showError(f"Cannot load item of type: {Reference.ItemCategories[category]}\n\nTry \"Open Wiki\"")
@@ -227,9 +245,7 @@ class Window(QtWidgets.QMainWindow):
         spells = data.pop('Possible Spells')
 
         self.populateItemStats(data)
-        blank = QtWidgets.QTreeWidgetItem([])
-        blank.setFlags(blank.flags() & ~QtCore.Qt.ItemIsSelectable)
-        self.ItemTreeView.addTopLevelItem(blank)
+        self.ItemTreeView.addTopLevelItem(self.createUnselectableItem(text=[], itemType=QTreeWidgetItem))
 
         self.populateItemChances(ashes, self.addItemSection("Possible Ashes of War"))
         self.populateItemChances(effects, self.addItemSection("Possible Effects"))
@@ -246,6 +262,9 @@ class Window(QtWidgets.QMainWindow):
             selection = self.DropsTreeWidget.currentItem()
         elif self.DataTabs.currentIndex() == 2:
             selection = self.ItemTreeView.currentItem()
+        else:
+            self.showError("Current tab has no viewable items")
+            return
 
         try:
             category = selection.data(0, QtCore.Qt.UserRole)
@@ -253,8 +272,9 @@ class Window(QtWidgets.QMainWindow):
             print(category, itemid)
 
             if itemid and category:
-                self.setupItemTree()
                 self.parseItemInfo(category, itemid)
+                return
+            raise AttributeError
 
         except AttributeError:
             self.showError("This item has no stored data")
@@ -276,6 +296,7 @@ class Window(QtWidgets.QMainWindow):
         if isinstance(data, dict):
             if 'ID' in data and 'Weight' in data:
                 leaf = QtWidgets.QTreeWidgetItem([str(data['Name']), str(data['Weight'])])
+                leaf.setData(0, QtCore.Qt.UserRole, data['Category'])
                 leaf.setData(0, QtCore.Qt.UserRole+1, data['ID'])
                 parent.addChild(leaf)
             else:
@@ -291,19 +312,43 @@ class Window(QtWidgets.QMainWindow):
                 self.populateItemChances(item, parent)
 
     def populateItemStats(self, stats_dict):
+        self.statRows = []
+
         for key, value in stats_dict.items():
-            item = QtWidgets.QTreeWidgetItem([f"{key}: {value}"])
+            item = QtWidgets.QTreeWidgetItem([f"{key}: {value}", ''])
             item.setFlags(item.flags() & ~QtCore.Qt.ItemIsSelectable)
+
             self.ItemTreeView.addTopLevelItem(item)
+            self.statRows.append(item)
+
+    def writeExtraStats(self, data):
+        items = list(data.items())
+        row_count = self.ItemTreeView.topLevelItemCount()
+
+        for row in range(row_count-1):
+            item = self.ItemTreeView.topLevelItem(row+1)
+
+            if row < len(items):
+                key, val = items[row]
+                item.setText(1, f"            {key}: {val}") # added tabs to make it more "right-aligned"
+            else:
+                item.setText(1, "")
 
     def openWiki(self):
         if self.DataTabs.currentIndex() == 1:
-            selection = self.DropsTreeWidget.currentItem().text(0)
+            selection = self.DropsTreeWidget.currentItem()
+            if selection:
+                selection = selection.text(0)
         elif self.DataTabs.currentIndex() == 2:
-            selection = self.ItemTreeView.currentItem().text(0)
+            selection = self.ItemTreeView.currentItem()
+            if selection:
+                selection = selection.text(0)
+        else:
+            self.showError("Current tab has no accepted items")
+            return
 
-        URL = QUrl(f"https://eldenringnightreign.wiki.fextralife.com/{selection.replace(" ", '+')}")
-        if URL.isValid():
+        if selection:
+            URL = QUrl(f"https://eldenringnightreign.wiki.fextralife.com/{selection.replace(" ", '+')}")
             self.DataTabs.setCurrentIndex(3)
             self.webEngineView.setUrl(URL)
         else:
@@ -349,12 +394,16 @@ class Window(QtWidgets.QMainWindow):
         self.enemyIdLineEdit.returnPressed.connect(self.update)
 
         # enemy list (ill use this eventually I swear)
+
         self.EnemyComboBox = QtWidgets.QComboBox(Form)
         self.EnemyComboBox.setGeometry(QtCore.QRect(70, 23, 481, 22))
         self.EnemyComboBox.setToolTip("List of common bosses and minibosses")
         self.EnemyComboBox.setEditable(True)
         self.EnemyComboBox.setObjectName("EnemyComboBox")
         self.EnemyComboBox.activated[str].connect(self.update)
+        # setup list of named enemies
+        for name, id in Enemy.PremadeEnemyList.items():
+            self.EnemyComboBox.addItem(name, id)
 
         # labels
         self.EnemyLabel = QtWidgets.QLabel("Enemy:", Form)
