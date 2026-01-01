@@ -48,6 +48,8 @@ class Window(QtWidgets.QMainWindow):
             "5. Locate the enemy within the map, you can move around with WASD while holding right click on the viewport<br>"
             "6. Click on the enemy, navigate to the \"Properties\" tab on the right and copy the NpcParamId<br>"
             "7. Paste the ID into the field within this application and press enter<br>"))
+        infomenu.addAction("Additional FP Cost", lambda: self.showMessageBox("Additional FP Cost",
+            "An extra value for FP/Stamina consumption that can be used for follow-ups, continuous spells like Comet Azur, etc.<br>"))
         infomenu.addSeparator()
         infomenu.addAction("Credits", lambda: self.showMessageBox("Credits",
             "<a href='https://linktr.ee/aerolitesr'>Aero</a> - Me! :D<br><br>"))
