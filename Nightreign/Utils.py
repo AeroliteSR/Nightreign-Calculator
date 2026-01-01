@@ -158,6 +158,7 @@ class NightreignFunctions():
             return {'Name': NameSource[default], 'ID': default, 'Weight': '100%', 'Category': 'Ash of War'}
 
         table = copy.deepcopy(TableSource[table])
+        NameSource = copy.deepcopy(NameSource)
         table = [entry for entry in table if entry['ID'] != 0 and entry['Weight'] != 0]
         max_weight = sum([entry['Weight'] for entry in table])
         

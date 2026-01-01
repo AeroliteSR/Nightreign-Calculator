@@ -395,8 +395,7 @@ class Window(QtWidgets.QMainWindow):
         self.enemyIdLineEdit.setObjectName("enemyIdLineEdit")
         self.enemyIdLineEdit.returnPressed.connect(self.update)
 
-        # enemy list (ill use this eventually I swear)
-
+        # enemy list (I actually used this)
         self.EnemyComboBox = QtWidgets.QComboBox(Form)
         self.EnemyComboBox.setGeometry(QtCore.QRect(70, 23, 481, 22))
         self.EnemyComboBox.setToolTip("List of common bosses and minibosses")
