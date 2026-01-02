@@ -11,7 +11,7 @@ from Nightreign import Utils
 from Nightreign import Names
 from Nightreign import Weapons
 #Other
-from os import path
+from pathlib import Path
 from functools import partial
 import pyperclip
 
@@ -524,9 +524,10 @@ class Window(QtWidgets.QMainWindow):
         self.pushButton_4.clicked.connect(self.openWiki)
 
         # meme image
+        global basepath
         label = QtWidgets.QLabel(self)
         label.setGeometry(QtCore.QRect(555, 23, 85, 111))
-        pixmap = QtGui.QPixmap(r"C:\Users\Aero\Programming\Github\Nightreign-Calculator\lacie.png")
+        pixmap = QtGui.QPixmap(str(basepath / "lacie.png"))
         label.setPixmap(pixmap.scaled(label.size(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation))
         label.setAlignment(QtCore.Qt.AlignCenter)
 
@@ -552,7 +553,8 @@ class Window(QtWidgets.QMainWindow):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    app.setWindowIcon(QtGui.QIcon(path.join(path.dirname(path.abspath(__file__)), "calc.ico")))
+    basepath = Path(sys.argv[0]).parent
+    app.setWindowIcon(QtGui.QIcon(str(basepath / 'calc.ico'))) # NOTE: add ts eventually
     ui = Window()
     ui.show()
     sys.exit(app.exec_())
