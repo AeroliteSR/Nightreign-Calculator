@@ -554,9 +554,9 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     basepath = Path(sys.argv[0]).parent
-    app.setWindowIcon(QtGui.QIcon(str(basepath / 'calc.ico'))) # NOTE: add ts eventually
+    app.setWindowIcon(QtGui.QIcon(str(basepath / 'calc.ico')))
     ui = Window()
     ui.show()
     sys.exit(app.exec_())
 
-# pyinstaller Calculator.py --noconsole --icon=calc.ico --add-data "calc.ico;."
+# pyinstaller main.py --noconsole --icon=calc.ico --add-data "calc.ico;." --add-data "lacie.png;."

@@ -15,6 +15,7 @@ table groups fix.py
 calc.ui
 CSVS/
 .gitignore
+App/
 
 # Distribution / packaging
 .Python
