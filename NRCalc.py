@@ -559,4 +559,4 @@ if __name__ == "__main__":
     ui.show()
     sys.exit(app.exec_())
 
-# pyinstaller main.py --noconsole --icon=calc.ico --add-data "calc.ico;." --add-data "lacie.png;."
+# pyinstaller NRCalc.py --noconsole --icon=calc.ico --add-data "calc.ico;." --add-data "lacie.png;."
