@@ -74,17 +74,20 @@ class Window(QtWidgets.QMainWindow):
         msg.exec_() 
    
     def initDropdown(self):
+        """Fill out the enemy dropdown list with loaded data"""
         for index, i in enumerate(self.enemiesList):
             self.EnemyComboBox.addItem("") # add enough blank entries for all enemies
             self.EnemyComboBox.setItemText(index, QtCore.QCoreApplication.translate("Form", f"{i}")) # add all enemies to the combobox
         self.EnemyComboBox.setCurrentIndex(-1)
 
     def createUnselectableItem(self, text, itemType):
+        """Makes an item of set type that cant be selected"""
         item = itemType(text)
         item.setFlags(item.flags() & ~QtCore.Qt.ItemIsSelectable)
         return item
 
     def parseEnemy(self):
+        """Logic for fetching the enemy's id from 2 fields"""
         enemy = self.enemyIdLineEdit.text()
         if not enemy or enemy == '': # if override field is empty
             try:
@@ -103,6 +106,7 @@ class Window(QtWidgets.QMainWindow):
         return enemy
 
     def parseStats(self, enemy, mode, time, players, mutated):
+        """Fetches and handles stat data"""
         result = self.Functions.getStats(enemy=enemy, players=players, depth=mode, time=time, mutation=mutated)
         name = Names.Character.get(Enemy.NameIDs.get(enemy, None), Enemy.Stats[enemy]['Type'])
         self.StatsListWidget.addItem(self.createUnselectableItem(text=name+'\n', itemType=QListWidgetItem))
@@ -112,6 +116,7 @@ class Window(QtWidgets.QMainWindow):
             self.StatsListWidget.addItem(item)
 
     def parseDrops(self, enemy, mutated):
+        """Fetches data and sends it to populate the tree"""
         data = self.Functions.getDrops(enemy=enemy, mutated=mutated)
         if not data:
             return
@@ -119,7 +124,7 @@ class Window(QtWidgets.QMainWindow):
         self.populateDropsRoot(data)
 
     def populateDropsRoot(self, drops_dict):
-        """Populate QTreeWidget with all drop slots from getDrops()."""
+        """Setting up the tree for drops"""
 
         for slot_name, items in drops_dict.items():
             slot_item = QtWidgets.QTreeWidgetItem([slot_name])
@@ -135,7 +140,7 @@ class Window(QtWidgets.QMainWindow):
             self.DropsTreeWidget.expandItem(slot_item)
 
     def populateDropsTree(self, data, parent=None):
-        """Recursively populate QTreeWidget with nested item table data."""
+        """Add data to drops tree recursively"""
 
         if isinstance(data, dict):
             for key, sublist in data.items():
@@ -195,6 +200,7 @@ class Window(QtWidgets.QMainWindow):
                     self.populateDropsTree(children, tree_item)
 
     def expandCollapseTree(self):
+        """Expand/collapse the data tree on currently selected tab"""
         if self.DataTabs.currentIndex() == 1:
             subject = self.DropsTreeWidget
         elif self.DataTabs.currentIndex() == 2:
@@ -212,11 +218,13 @@ class Window(QtWidgets.QMainWindow):
                 subject.expandAll()
 
     def clear(self):
+        """Clear all tabs"""
         self.DropsTreeWidget.clear()
         self.ItemTreeView.clear()
         self.StatsListWidget.clear()
     
     def parseItemInfo(self, category, itemid):
+        """Main logic for loading data to item tab"""
         if category == 2: # weapons
             self.setupItemTree() # clear and reset
             name = Names.Weapon[itemid]
@@ -260,6 +268,7 @@ class Window(QtWidgets.QMainWindow):
         self.DataTabs.setCurrentIndex(2)
 
     def loadItem(self):
+        """Initial function called by the load button to get data"""
         if self.DataTabs.currentIndex() == 1:
             selection = self.DropsTreeWidget.currentItem()
         elif self.DataTabs.currentIndex() == 2:
@@ -283,11 +292,13 @@ class Window(QtWidgets.QMainWindow):
             return
 
     def setupItemTree(self):
+        """Resetting the tree for use"""
         self.ItemTreeView.clear()
         self.ItemTreeView.setColumnCount(1)
         self.ItemTreeView.setHeaderLabels(["Item", "Chance"])
 
     def addItemSection(self, title, color="#971a44"):
+        """Dropdown trees for data parsed below"""
         header = QtWidgets.QTreeWidgetItem([title, ''])
         header.setFlags(header.flags() & ~QtCore.Qt.ItemIsSelectable)
         header.setForeground(0, QBrush(QColor(color)))
@@ -295,6 +306,7 @@ class Window(QtWidgets.QMainWindow):
         return header
     
     def populateItemChances(self, data, parent):
+        """Chances for effects etc. for each item"""
         if isinstance(data, dict):
             if 'ID' in data and 'Weight' in data:
                 leaf = QtWidgets.QTreeWidgetItem([str(data['Name']), str(data['Weight'])])
@@ -314,6 +326,7 @@ class Window(QtWidgets.QMainWindow):
                 self.populateItemChances(item, parent)
 
     def populateItemStats(self, stats_dict):
+        """Top basic stats in item tab"""
         self.statRows = []
 
         for key, value in stats_dict.items():
@@ -324,6 +337,7 @@ class Window(QtWidgets.QMainWindow):
             self.statRows.append(item)
 
     def writeExtraStats(self, data):
+        """Add stats for AoWs/magic/effects to the item tab"""
         items = list(data.items())
         row_count = self.ItemTreeView.topLevelItemCount()
 
@@ -337,6 +351,7 @@ class Window(QtWidgets.QMainWindow):
                 item.setText(1, "")
 
     def openWiki(self):
+        """Load and swap to wiki tab with selected item"""
         if self.DataTabs.currentIndex() == 1:
             selection = self.DropsTreeWidget.currentItem()
             if selection:
@@ -357,6 +372,7 @@ class Window(QtWidgets.QMainWindow):
             self.showError(f'Requested item: [{selection}] is not a valid URL')
 
     def update(self, mutated=None):
+        """Update calculated data whenever a field is changed """
         self.clear()
         
         enemy = self.parseEnemy()
