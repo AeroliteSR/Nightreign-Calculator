@@ -29,6 +29,8 @@ class Exporter:
     @staticmethod
     def tree2dict(item: QtWidgets.QTreeWidgetItem):
         text = item.text(0)
+        if not text:
+            return
         chance = item.text(1)
 
         if item.childCount() == 0 and not item.parent():
@@ -98,7 +100,9 @@ class Exporter:
         elif isinstance(tab, QtWidgets.QTreeWidget):
             data = []
             for i in range(tab.topLevelItemCount()):
-                data.append(Exporter.tree2dict(tab.topLevelItem(i)))
+                _dict = Exporter.tree2dict(tab.topLevelItem(i))
+                if _dict:
+                    data.append(_dict)
 
         else:
             raise TypeError("Unsupported widget type")
@@ -385,7 +389,7 @@ class Window(QtWidgets.QMainWindow):
         try:
             category = selection.data(0, QtCore.Qt.UserRole)
             itemid = selection.data(0, QtCore.Qt.UserRole + 1)
-            print(category, itemid)
+            #print(category, itemid) # 4 debug
 
             if itemid and category:
                 self.parseItemInfo(category, itemid)
@@ -448,7 +452,6 @@ class Window(QtWidgets.QMainWindow):
         
         for i in reversed(range(self.ItemTreeView.topLevelItemCount())):
             item = self.ItemTreeView.topLevelItem(i)
-            print(item.text(0), item.data(0, Qt.UserRole))
             if item.data(0, Qt.UserRole) == 'EXTRA':
                 self.ItemTreeView.takeTopLevelItem(i)
             
