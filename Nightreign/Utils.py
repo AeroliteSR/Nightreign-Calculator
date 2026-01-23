@@ -35,6 +35,13 @@ class CalcFunctions():
     
 class NightreignFunctions():
     @staticmethod
+    def getRunes(enemy:  int, players: int):
+        baseStats = Enemy.Stats[enemy]
+        baseRunes = baseStats['Runes']
+        baseRunes *= Scaling.MultiplayerRuneScaling[players]
+        return int(baseRunes * 8) # fixed multiplier to runes acquired given as "Hero" (speffect 99800) may change if my understanding of it does.
+
+    @staticmethod
     def getStats(enemy: int = 20402100, players: int = 1, time: int = 0, depth: int = 0, mutation: bool = False):
         """One day ill make this function less messy and hardcoded"""
         baseStats = Enemy.Stats[enemy]
@@ -68,6 +75,7 @@ class NightreignFunctions():
                 dmg *= Scaling.DepthScalingStats[Scale]['Damage']
 
         output = {'Health': ceil(hp),
+                 'Runes': NightreignFunctions.getRunes(enemy=enemy, players=players),
                  'Damage Multiplier': f"{dmg}x",
                  'Stamina Damage Multiplier': f"{stamDmg}x"}
         

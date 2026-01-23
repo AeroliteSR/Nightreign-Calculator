@@ -83,7 +83,7 @@ AttachEffects = {
 330600: {'TextID': 330600, 'Value': 30, 'Is Debuff': False, 'Is Percentage': True, 'Only Applied When Held': False, 'Compatible with': "Any"}, 
 330700: {'TextID': 330700, 'Value': 2, 'Is Debuff': False, 'Is Percentage': False, 'Only Applied When Held': False, 'Compatible with': "Any"}, 
 330800: {'TextID': 330800, 'Value': -25, 'Is Debuff': False, 'Is Percentage': True, 'Only Applied When Held': False, 'Compatible with': "Any"}, 
-330801: {'TextID': 330801, 'Value': -15, 'Is Debuff': True, 'Is Percentage': True, 'Only Applied When Held': False, 'Compatible with': "Any"}, 
+330801: {'TextID': 330801, 'Value': -6, 'Is Debuff': True, 'Is Percentage': True, 'Only Applied When Held': False, 'Compatible with': "Any"}, # changed in upd. 1.03.2
 330900: {'TextID': 330900, 'Value': 18, 'Is Debuff': False, 'Is Percentage': True, 'Only Applied When Held': False, 'Compatible with': "Any"}, 
 340000: {'TextID': 340000, 'Value': 15, 'Is Debuff': False, 'Is Percentage': True, 'Only Applied When Held': False, 'Compatible with': "Any"}, 
 340100: {'TextID': 340100, 'Value': 20, 'Is Debuff': False, 'Is Percentage': True, 'Only Applied When Held': False, 'Compatible with': "Any"}, 
@@ -92,7 +92,7 @@ AttachEffects = {
 340400: {'TextID': 340400, 'Value': 20, 'Is Debuff': False, 'Is Percentage': True, 'Only Applied When Held': False, 'Compatible with': "Any"}, 
 340500: {'TextID': 340500, 'Value': 10, 'Is Debuff': False, 'Is Percentage': True, 'Only Applied When Held': False, 'Compatible with': "Any"}, 
 340700: {'TextID': 340700, 'Value': 0, 'Is Debuff': False, 'Is Percentage': False, 'Only Applied When Held': False, 'Compatible with': "Any"}, 
-340701: {'TextID': 340701, 'Value': -10, 'Is Debuff': True, 'Is Percentage': True, 'Only Applied When Held': False, 'Compatible with': "Any"}, 
+340701: {'TextID': 340701, 'Value': -5, 'Is Debuff': True, 'Is Percentage': True, 'Only Applied When Held': False, 'Compatible with': "Any"}, # changed in upd. 1.03.2
 340800: {'TextID': 340800, 'Value': 40, 'Is Debuff': False, 'Is Percentage': True, 'Only Applied When Held': False, 'Compatible with': "Any"}, 
 340900: {'TextID': 340900, 'Value': 30, 'Is Debuff': False, 'Is Percentage': True, 'Only Applied When Held': False, 'Compatible with': "Any"}, 
 341000: {'TextID': 341000, 'Value': 20, 'Is Debuff': False, 'Is Percentage': True, 'Only Applied When Held': False, 'Compatible with': "Any"}, 
@@ -3183,7 +3183,7 @@ PermanentBuffs = {
 106: {'Name': "[Key Item] Golden Sprout", 'SpEffect': 9706, 'Value': 0, 'Is Percent': False}, 
 107: {'Name': "[Key Item] Night Shard", 'SpEffect': 9707, 'Value': 0, 'Is Percent': False}, 
 108: {'Name': "[Key Item] Vestige of Night", 'SpEffect': 9708, 'Value': 0, 'Is Percent': False}, 
-109: {'Name': None, 'SpEffect': 9709, 'Value': 0, 'Is Percent': False}, 
+109: {'Name': None, 'SpEffect': 9709, 'Value': 0, 'Is Percent': False},
 110: {'Name': "[Key Item] Traitor's Letter", 'SpEffect': 9710, 'Value': 0, 'Is Percent': False}, 
 111: {'Name': "[Key Item] Edge of Order", 'SpEffect': 9711, 'Value': 0, 'Is Percent': False}, 
 113: {'Name': "[Key Item] Stone Stake", 'SpEffect': 9713, 'Value': 0, 'Is Percent': False}, 

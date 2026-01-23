@@ -2015,8 +2015,8 @@ Weapons = {
 60520000: {'Weapon Type': "Straight Sword", 'Attach Effect': None, 'Physical Damage': 70, 'Magic Damage': 0, 'Fire Damage': 0, 'Lightning Damage': 0, 'Stamina Damage': 30, 'Poise Damage': 5, 'Crit Damage Multiplier': 1.0, 'Default Ash of War': 0, 'Ash Table': None, 'Rarity': "Common", 'Revive Damage': 14, 'Attribute': None}, 
 60600000: {'Weapon Type': "Staff", 'Attach Effect': None, 'Physical Damage': 0, 'Magic Damage': 25, 'Fire Damage': 0, 'Lightning Damage': 0, 'Stamina Damage': 20, 'Poise Damage': 3, 'Crit Damage Multiplier': 1.0, 'Default Ash of War': 0, 'Ash Table': None, 'Rarity': "Common", 'Revive Damage': 20, 'Attribute': None}, 
 60610000: {'Weapon Type': "Staff", 'Attach Effect': None, 'Physical Damage': 0, 'Magic Damage': 15, 'Fire Damage': 0, 'Lightning Damage': 0, 'Stamina Damage': 20, 'Poise Damage': 3, 'Crit Damage Multiplier': 1.0, 'Default Ash of War': 10, 'Ash Table': None, 'Rarity': "Common", 'Revive Damage': 1, 'Attribute': None}, 
-60700000: {'Weapon Type': "Katana", 'Attach Effect': None, 'Physical Damage': 61, 'Magic Damage': 0, 'Fire Damage': 0, 'Lightning Damage': 0, 'Stamina Damage': 79, 'Poise Damage': 4, 'Crit Damage Multiplier': 1.0, 'Default Ash of War': 0, 'Ash Table': None, 'Rarity': "Common", 'Revive Damage': 14, 'Attribute': None}, 
-60710000: {'Weapon Type': "Katana", 'Attach Effect': None, 'Physical Damage': 61, 'Magic Damage': 0, 'Fire Damage': 0, 'Lightning Damage': 0, 'Stamina Damage': 79, 'Poise Damage': 4, 'Crit Damage Multiplier': 1.0, 'Default Ash of War': 0, 'Ash Table': None, 'Rarity': "Common", 'Revive Damage': 14, 'Attribute': None}, 
+60700000: {'Weapon Type': "Katana", 'Attach Effect': None, 'Physical Damage': 61, 'Magic Damage': 0, 'Fire Damage': 0, 'Lightning Damage': 0, 'Stamina Damage': 79, 'Poise Damage': 4, 'Crit Damage Multiplier': 1.5, 'Default Ash of War': 0, 'Ash Table': None, 'Rarity': "Common", 'Revive Damage': 14, 'Attribute': None}, # changed in upd. 1.03.2
+60710000: {'Weapon Type': "Katana", 'Attach Effect': None, 'Physical Damage': 61, 'Magic Damage': 0, 'Fire Damage': 0, 'Lightning Damage': 0, 'Stamina Damage': 79, 'Poise Damage': 4, 'Crit Damage Multiplier': 1.5, 'Default Ash of War': 0, 'Ash Table': None, 'Rarity': "Common", 'Revive Damage': 14, 'Attribute': None}, # changed in upd. 1.03.2
 60800000: {'Weapon Type': "Straight Sword", 'Attach Effect': None, 'Physical Damage': 65, 'Magic Damage': 0, 'Fire Damage': 0, 'Lightning Damage': 0, 'Stamina Damage': 30, 'Poise Damage': 5, 'Crit Damage Multiplier': 1.0, 'Default Ash of War': 0, 'Ash Table': None, 'Rarity': "Common", 'Revive Damage': 14, 'Attribute': None}, 
 60810000: {'Weapon Type': "Straight Sword", 'Attach Effect': None, 'Physical Damage': 65, 'Magic Damage': 0, 'Fire Damage': 0, 'Lightning Damage': 0, 'Stamina Damage': 30, 'Poise Damage': 5, 'Crit Damage Multiplier': 1.0, 'Default Ash of War': 0, 'Ash Table': None, 'Rarity': "Common", 'Revive Damage': 14, 'Attribute': None}, 
 60900000: {'Weapon Type': "Straight Sword", 'Attach Effect': None, 'Physical Damage': 65, 'Magic Damage': 0, 'Fire Damage': 0, 'Lightning Damage': 0, 'Stamina Damage': 30, 'Poise Damage': 5, 'Crit Damage Multiplier': 1.0, 'Default Ash of War': 0, 'Ash Table': None, 'Rarity': "Common", 'Revive Damage': 14, 'Attribute': None}, 
@@ -3863,7 +3863,7 @@ CustomWeapons = {
 566009: {'Weapon': 32090000, 'Ash Table': 308, 'Attach Effect Tables': [808100201, None, None, None, None, None], 'Magic Tables': [None, None]}, 
 566010: {'Weapon': 9070000, 'Ash Table': 1043, 'Attach Effect Tables': [808200302, None, None, None, None, None], 'Magic Tables': [None, None]}, 
 566011: {'Weapon': 18160000, 'Ash Table': 123, 'Attach Effect Tables': [808620020, None, None, None, None, None], 'Magic Tables': [None, None]}, 
-566012: {'Weapon': 11120000, 'Ash Table': 1018, 'Attach Effect Tables': [808350002, None, None, None, None, None], 'Magic Tables': [None, None]}, 
+566012: {'Weapon': 11120000, 'Ash Table': 1035, 'Attach Effect Tables': [808350002, None, None, None, None, None], 'Magic Tables': [None, None]}, # changed in upd. 1.03.2 
 566013: {'Weapon': 34080000, 'Ash Table': None, 'Attach Effect Tables': [808320002, None, None, None, None, None], 'Magic Tables': [7000, 7090]}, 
 567000: {'Weapon': 1030000, 'Ash Table': 101, 'Attach Effect Tables': [808660101, None, None, None, None, None], 'Magic Tables': [None, None]}, 
 567001: {'Weapon': 9030000, 'Ash Table': 606, 'Attach Effect Tables': [808610300, None, None, None, None, None], 'Magic Tables': [None, None]}, 
@@ -3889,7 +3889,7 @@ CustomWeapons = {
 571007: {'Weapon': 33210000, 'Ash Table': None, 'Attach Effect Tables': [808520001, None, None, None, None, None], 'Magic Tables': [4440, 4430]}, 
 571008: {'Weapon': 34020000, 'Ash Table': None, 'Attach Effect Tables': [808540000, None, None, None, None, None], 'Magic Tables': [6100, 6120]}, 
 571009: {'Weapon': 9060000, 'Ash Table': 1178, 'Attach Effect Tables': [808600102, None, None, None, None, None], 'Magic Tables': [None, None]}, 
-571010: {'Weapon': 11120000, 'Ash Table': 1018, 'Attach Effect Tables': [808600202, None, None, None, None, None], 'Magic Tables': [None, None]}, 
+571010: {'Weapon': 11120000, 'Ash Table': 1035, 'Attach Effect Tables': [808600202, None, None, None, None, None], 'Magic Tables': [None, None]}, # changed in upd. 1.03.2 
 571011: {'Weapon': 41060000, 'Ash Table': 402, 'Attach Effect Tables': [808530000, None, None, None, None, None], 'Magic Tables': [None, None]}, 
 571012: {'Weapon': 42030000, 'Ash Table': 400, 'Attach Effect Tables': [808100402, None, None, None, None, None], 'Magic Tables': [None, None]}, 
 571013: {'Weapon': 32120000, 'Ash Table': 1197, 'Attach Effect Tables': [808330102, None, None, None, None, None], 'Magic Tables': [None, None]}, 
@@ -3929,7 +3929,7 @@ CustomWeapons = {
 574005: {'Weapon': 11060000, 'Ash Table': 801, 'Attach Effect Tables': [808200401, None, None, None, None, None], 'Magic Tables': [None, None]}, 
 574006: {'Weapon': 42010000, 'Ash Table': 400, 'Attach Effect Tables': [808320001, None, None, None, None, None], 'Magic Tables': [None, None]}, 
 574007: {'Weapon': 44000000, 'Ash Table': 503, 'Attach Effect Tables': [808520001, None, None, None, None, None], 'Magic Tables': [None, None]}, 
-574008: {'Weapon': 33040000, 'Ash Table': None, 'Attach Effect Tables': [808630000, None, None, None, None, None], 'Magic Tables': [4500, 4520]}, 
+574008: {'Weapon': 33040000, 'Ash Table': None, 'Attach Effect Tables': [808630000, None, None, None, None, None], 'Magic Tables': [4500, 4510]}, # changed in upd. 1.03.2
 574009: {'Weapon': 34030000, 'Ash Table': None, 'Attach Effect Tables': [808630100, None, None, None, None, None], 'Magic Tables': [6900, 6941]}, 
 574010: {'Weapon': 12170000, 'Ash Table': 1000, 'Attach Effect Tables': [808350002, None, None, None, None, None], 'Magic Tables': [None, None]}, 
 574011: {'Weapon': 5050000, 'Ash Table': 501, 'Attach Effect Tables': [808530000, None, None, None, None, None], 'Magic Tables': [None, None]}, 
@@ -3947,7 +3947,7 @@ CustomWeapons = {
 575009: {'Weapon': 34040000, 'Ash Table': None, 'Attach Effect Tables': [808530100, None, None, None, None, None], 'Magic Tables': [6800, 6840]}, 
 575010: {'Weapon': 1070000, 'Ash Table': 1017, 'Attach Effect Tables': [808630000, None, None, None, None, None], 'Magic Tables': [None, None]}, 
 575011: {'Weapon': 18080000, 'Ash Table': 603, 'Attach Effect Tables': [808100402, None, None, None, None, None], 'Magic Tables': [None, None]}, 
-575012: {'Weapon': 11120000, 'Ash Table': 1018, 'Attach Effect Tables': [808420002, None, None, None, None, None], 'Magic Tables': [None, None]}, 
+575012: {'Weapon': 11120000, 'Ash Table': 1035, 'Attach Effect Tables': [808420002, None, None, None, None, None], 'Magic Tables': [None, None]}, # changed in upd. 1.03.2 
 575013: {'Weapon': 32130000, 'Ash Table': 308, 'Attach Effect Tables': [808610720, None, None, None, None, None], 'Magic Tables': [None, None]}, 
 576000: {'Weapon': 1050000, 'Ash Table': 218, 'Attach Effect Tables': [808540000, None, None, None, None, None], 'Magic Tables': [None, None]}, 
 576001: {'Weapon': 9010000, 'Ash Table': 102, 'Attach Effect Tables': [808300001, None, None, None, None, None], 'Magic Tables': [None, None]}, 
@@ -4304,7 +4304,7 @@ CustomWeapons = {
 666009: {'Weapon': 32090000, 'Ash Table': 308, 'Attach Effect Tables': [808100201, None, None, 808850400, 808420001, 808801000], 'Magic Tables': [None, None]}, 
 666010: {'Weapon': 9070000, 'Ash Table': 1043, 'Attach Effect Tables': [808880000, 808210502, 808800250, 808880000, 808210502, 808800250], 'Magic Tables': [None, None]}, 
 666011: {'Weapon': 18160000, 'Ash Table': 123, 'Attach Effect Tables': [808620020, None, None, None, None, None], 'Magic Tables': [None, None]}, 
-666012: {'Weapon': 11120000, 'Ash Table': 1018, 'Attach Effect Tables': [808350002, None, None, 808850900, 808350002, 808760100], 'Magic Tables': [None, None]}, 
+666012: {'Weapon': 11120000, 'Ash Table': 1035, 'Attach Effect Tables': [808350002, None, None, 808850900, 808350002, 808760100], 'Magic Tables': [None, None]}, # changed in upd. 1.03.2
 666013: {'Weapon': 34080000, 'Ash Table': None, 'Attach Effect Tables': [808320002, None, None, None, None, None], 'Magic Tables': [7000, 7090]}, 
 667000: {'Weapon': 1030000, 'Ash Table': 101, 'Attach Effect Tables': [808660101, None, None, 808130001, 808630110, 808831200], 'Magic Tables': [None, None]}, 
 667001: {'Weapon': 9030000, 'Ash Table': 606, 'Attach Effect Tables': [808610300, None, None, None, None, None], 'Magic Tables': [None, None]}, 
@@ -4330,7 +4330,7 @@ CustomWeapons = {
 671007: {'Weapon': 33210000, 'Ash Table': None, 'Attach Effect Tables': [808520001, None, None, None, None, None], 'Magic Tables': [4440, 4430]}, 
 671008: {'Weapon': 34020000, 'Ash Table': None, 'Attach Effect Tables': [808540000, None, None, 808850100, 808330301, 808771000], 'Magic Tables': [6100, 6120]}, 
 671009: {'Weapon': 9060000, 'Ash Table': 1178, 'Attach Effect Tables': [808600102, None, None, 808530000, 808350002, 808813100], 'Magic Tables': [None, None]}, 
-671010: {'Weapon': 11120000, 'Ash Table': 1018, 'Attach Effect Tables': [808850550, 808600202, 808800250, 808850550, 808600202, 808800250], 'Magic Tables': [None, None]}, 
+671010: {'Weapon': 11120000, 'Ash Table': 1035, 'Attach Effect Tables': [808850550, 808600202, 808800250, 808850550, 808600202, 808800250], 'Magic Tables': [None, None]}, # changed in upd. 1.03.2
 671011: {'Weapon': 41060000, 'Ash Table': 402, 'Attach Effect Tables': [808883000, 808340002, 808810050, 808883000, 808340002, 808810050], 'Magic Tables': [None, None]}, 
 671012: {'Weapon': 42030000, 'Ash Table': 400, 'Attach Effect Tables': [808100402, None, None, None, None, None], 'Magic Tables': [None, None]}, 
 671013: {'Weapon': 32120000, 'Ash Table': 1197, 'Attach Effect Tables': [808330102, None, None, None, None, None], 'Magic Tables': [None, None]}, 
@@ -4370,7 +4370,7 @@ CustomWeapons = {
 674005: {'Weapon': 11060000, 'Ash Table': 801, 'Attach Effect Tables': [808200401, None, None, None, None, None], 'Magic Tables': [None, None]}, 
 674006: {'Weapon': 42010000, 'Ash Table': 400, 'Attach Effect Tables': [808320001, None, None, None, None, None], 'Magic Tables': [None, None]}, 
 674007: {'Weapon': 44000000, 'Ash Table': 503, 'Attach Effect Tables': [808520001, None, None, None, None, None], 'Magic Tables': [None, None]}, 
-674008: {'Weapon': 33040000, 'Ash Table': None, 'Attach Effect Tables': [808630000, None, None, None, None, None], 'Magic Tables': [4500, 4520]}, 
+674008: {'Weapon': 33040000, 'Ash Table': None, 'Attach Effect Tables': [808630000, None, None, None, None, None], 'Magic Tables': [4500, 4510]}, # changed in upd. 1.03.2 
 674009: {'Weapon': 34030000, 'Ash Table': None, 'Attach Effect Tables': [808630100, None, None, None, None, None], 'Magic Tables': [6900, 6941]}, 
 674010: {'Weapon': 12170000, 'Ash Table': 1000, 'Attach Effect Tables': [808851150, 808620120, 808821050, 808851150, 808620120, 808821050], 'Magic Tables': [None, None]}, 
 674011: {'Weapon': 5050000, 'Ash Table': 501, 'Attach Effect Tables': [808530000, None, None, 808320102, 808530000, 808830000], 'Magic Tables': [None, None]}, 
@@ -4388,7 +4388,7 @@ CustomWeapons = {
 675009: {'Weapon': 34040000, 'Ash Table': None, 'Attach Effect Tables': [808530100, None, None, None, None, None], 'Magic Tables': [6800, 6840]}, 
 675010: {'Weapon': 1070000, 'Ash Table': 1017, 'Attach Effect Tables': [808630000, None, None, None, None, None], 'Magic Tables': [None, None]}, 
 675011: {'Weapon': 18080000, 'Ash Table': 603, 'Attach Effect Tables': [808100402, None, None, None, None, None], 'Magic Tables': [None, None]}, 
-675012: {'Weapon': 11120000, 'Ash Table': 1018, 'Attach Effect Tables': [808420002, None, None, 808652120, 808420002, 808800200], 'Magic Tables': [None, None]}, 
+675012: {'Weapon': 11120000, 'Ash Table': 1035, 'Attach Effect Tables': [808420002, None, None, 808652120, 808420002, 808800200], 'Magic Tables': [None, None]}, # changed in upd. 1.03.2
 675013: {'Weapon': 32130000, 'Ash Table': 308, 'Attach Effect Tables': [808850850, 808220002, 808830050, 808850850, 808220002, 808830050], 'Magic Tables': [None, None]}, 
 676000: {'Weapon': 1050000, 'Ash Table': 218, 'Attach Effect Tables': [808540000, None, None, None, None, None], 'Magic Tables': [None, None]}, 
 676001: {'Weapon': 9010000, 'Ash Table': 102, 'Attach Effect Tables': [808300001, None, None, None, None, None], 'Magic Tables': [None, None]}, 
@@ -7181,7 +7181,7 @@ CustomWeapons = {
 33250000: {'Weapon': 33250000, 'Ash Table': None, 'Attach Effect Tables': [501400200, None, None, 620000000, 501400200, 505400200], 'Magic Tables': [3325000, 3325100]}, 
 33255000: {'Weapon': 33250000, 'Ash Table': None, 'Attach Effect Tables': [630000000, 501400200, 813000000, 630000000, 501400200, 813000000], 'Magic Tables': [3325000, 3325100]}, 
 33260000: {'Weapon': 33260000, 'Ash Table': None, 'Attach Effect Tables': [501400100, None, None, 610000000, 501400100, 505400100], 'Magic Tables': [3326000, 3326100]}, 
-33270000: {'Weapon': 33270000, 'Ash Table': None, 'Attach Effect Tables': [501400100, None, None, 610000000, 501400100, 505400100], 'Magic Tables': [3327000, 3327100]}, 
+33270000: {'Weapon': 33270000, 'Ash Table': None, 'Attach Effect Tables': [501400100, None, None, 610000000, 501400100, 505400100], 'Magic Tables': [3327000, 3327100]}, # reference (mtable 0) changed in upd. 1.03.2
 33280000: {'Weapon': 33280000, 'Ash Table': None, 'Attach Effect Tables': [501400100, None, None, 610000000, 501400100, 505400100], 'Magic Tables': [3328000, 3328100]}, 
 33990000: {'Weapon': 33000000, 'Ash Table': None, 'Attach Effect Tables': [None, None, None, None, None, None], 'Magic Tables': [None, None]}, 
 33990001: {'Weapon': 33000000, 'Ash Table': None, 'Attach Effect Tables': [None, None, None, None, None, None], 'Magic Tables': [None, None]}, 

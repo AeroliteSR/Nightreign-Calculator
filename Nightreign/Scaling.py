@@ -672,3 +672,9 @@ ResistanceCorrectionScaling = { # adds to or multiplies resistance values after 
 7005: {"1st Addition": 457, "1st Multiplication": 1.0, "2nd Addition": 457, "2nd Multiplication": 1.0, "3rd Addition": 457, "3rd Multiplication": 1.0, "4th Addition": 457, "4th Multiplication": 1, "5th Addition": 457, "5th Multiplication": 1.0},
 7010: {"1st Addition": 64, "1st Multiplication": 1.0, "2nd Addition": 92, "2nd Multiplication": 1.0, "3rd Addition": 134, "3rd Multiplication": 1.0, "4th Addition": 232, "4th Multiplication": 1, "5th Addition": 522, "5th Multiplication": 1.0},
 }
+
+MultiplayerRuneScaling = { # {number of players}: {multiplier}
+    1: 1.5, # solos
+    2: 1.3, # duos
+    3: 1 # trios
+}
