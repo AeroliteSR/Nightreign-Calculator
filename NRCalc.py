@@ -2,7 +2,7 @@
 from PyQt5 import QtGui, QtWidgets, QtCore, QtWebEngineWidgets
 from PyQt5.QtWidgets import QMessageBox, QListWidgetItem, QTreeWidgetItem
 from PyQt5.QtGui import QBrush, QColor
-from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtWebEngineWidgets import QWebEngineSettings
 #NR Data and functions
 from Nightreign import Reference
@@ -14,6 +14,98 @@ from Nightreign import Weapons
 from pathlib import Path
 from functools import partial
 import pyperclip
+import json
+
+class Exporter:
+    @staticmethod
+    def item_text(item):
+        name = item.text(0)
+        chance = item.text(1)
+
+        if chance:
+            return f"{name} - {chance}"
+        return name
+
+    @staticmethod
+    def tree2dict(item: QtWidgets.QTreeWidgetItem):
+        text = item.text(0)
+        chance = item.text(1)
+
+        if item.childCount() == 0 and not item.parent():
+            if ': ' in text:
+                key, value = text.split(': ', 1)
+            else:
+                key, value = "Name", text
+
+            if value != '':
+                return {key: value}
+
+        node = {"text": text}
+
+        if chance:
+            node['chance'] = chance
+
+        childcount = item.childCount()
+        if childcount > 0:
+            node["children"] = []
+            for i in range(item.childCount()):
+                child = item.child(i)
+                node["children"].append(Exporter.tree2dict(child))
+
+        return node
+
+    @staticmethod
+    def tree2text(item, depth=0):
+        lines = ["  " * depth + Exporter.item_text(item)]
+
+        for i in range(item.childCount()):
+            child = item.child(i)
+            lines.extend(Exporter.tree2text(child, depth + 1))
+
+        if item.childCount() > 0:
+            lines.append("")
+
+        return lines
+
+    @staticmethod
+    def ExportTXT(path: str, tab):
+        with open(path, "w", encoding="utf-8") as file:
+
+            if isinstance(tab, QtWidgets.QListWidget):
+                for i in range(tab.count()):
+                    file.write(tab.item(i).text() + "\n")
+
+            elif isinstance(tab, QtWidgets.QTreeWidget):
+                for i in range(tab.topLevelItemCount()):
+                    for line in Exporter.tree2text(tab.topLevelItem(i)):
+                        file.write(line + "\n")
+
+            else:
+                raise TypeError("Unsupported widget type")
+
+    @staticmethod
+    def ExportJSON(path: str, tab):
+        if isinstance(tab, QtWidgets.QListWidget):
+            data = {}
+            for i in range(tab.count()):
+                item_text = tab.item(i).text()
+                if ' - ' in item_text:
+                    k, v = item_text.split(' - ', 1)
+                else:
+                    k, v = "Name", item_text.replace('\n', '')
+                data[k] = v
+
+        elif isinstance(tab, QtWidgets.QTreeWidget):
+            data = []
+            for i in range(tab.topLevelItemCount()):
+                data.append(Exporter.tree2dict(tab.topLevelItem(i)))
+
+        else:
+            raise TypeError("Unsupported widget type")
+
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
+
 
 class Window(QtWidgets.QMainWindow):
     def __init__(self):
@@ -35,6 +127,7 @@ class Window(QtWidgets.QMainWindow):
     def createMenus(self):
         menubar = self.menuBar()
         fileMenu = menubar.addMenu("File")
+        exportMenu = fileMenu.addMenu('Export')
         infomenu = menubar.addMenu("Info")
 
         infomenu.addAction("Entity IDs", lambda: self.showMessageBox("Entity IDs",
@@ -53,12 +146,20 @@ class Window(QtWidgets.QMainWindow):
         infomenu.addSeparator()
         infomenu.addAction("Credits", lambda: self.showMessageBox("Credits",
             "<a href='https://linktr.ee/aerolitesr'>Aero</a> - Me! :D<br><br>"))
-
-        def createAction(name, func):
-            action = QtWidgets.QAction(name, self)
-            action.triggered.connect(func)
-            return action
         
+        exp_stats = exportMenu.addMenu("Stats")
+        exp_drops = exportMenu.addMenu("Drops")
+        exp_item = exportMenu.addMenu("Item")
+        # TODO: eventually add an option to export to csv too
+        exp_stats.addAction(self.createAction("As txt", lambda: Exporter.ExportTXT(path='o.txt', tab=self.StatsListWidget)))
+        exp_stats.addAction(self.createAction("As json", lambda: Exporter.ExportJSON(path='o.txt', tab=self.StatsListWidget)))
+
+        exp_drops.addAction(self.createAction("As txt", lambda: Exporter.ExportTXT(path='o.txt', tab=self.DropsTreeWidget)))
+        exp_drops.addAction(self.createAction("As json", lambda: Exporter.ExportJSON(path='o.txt', tab=self.DropsTreeWidget)))
+
+        exp_item.addAction(self.createAction("As txt", lambda: Exporter.ExportTXT(path='o.txt', tab=self.ItemTreeView)))
+        exp_item.addAction(self.createAction("As json", lambda: Exporter.ExportJSON(path='o.txt', tab=self.ItemTreeView)))
+
     def showMessageBox(self, title, message):
         msg = QMessageBox(self)
         msg.setWindowTitle(title)
@@ -72,6 +173,11 @@ class Window(QtWidgets.QMainWindow):
         msg.setWindowTitle("Error") 
         msg.setText(text) 
         msg.exec_() 
+
+    def createAction(self, name, func):
+        action = QtWidgets.QAction(name, self)
+        action.triggered.connect(func)
+        return action
    
     def initDropdown(self):
         """Fill out the enemy dropdown list with loaded data"""
@@ -261,7 +367,6 @@ class Window(QtWidgets.QMainWindow):
         self.populateItemChances(effects, self.addItemSection("Possible Effects"))
         self.populateItemChances(spells, self.addItemSection("Possible Spells"))
 
-        self.ItemTreeView.resizeColumnToContents(0)
         self.ItemTreeView.resizeColumnToContents(1)
 
         # only swap tabs if successful
@@ -294,8 +399,10 @@ class Window(QtWidgets.QMainWindow):
     def setupItemTree(self):
         """Resetting the tree for use"""
         self.ItemTreeView.clear()
-        self.ItemTreeView.setColumnCount(1)
         self.ItemTreeView.setHeaderLabels(["Item", "Chance"])
+        header = self.ItemTreeView.header()
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
 
     def addItemSection(self, title, color="#971a44"):
         """Dropdown trees for data parsed below"""
@@ -335,20 +442,33 @@ class Window(QtWidgets.QMainWindow):
 
             self.ItemTreeView.addTopLevelItem(item)
             self.statRows.append(item)
-
+    
     def writeExtraStats(self, data):
-        """Add stats for AoWs/magic/effects to the item tab"""
+        """Write stats for loaded sub-items"""
+        
+        for i in reversed(range(self.ItemTreeView.topLevelItemCount())):
+            item = self.ItemTreeView.topLevelItem(i)
+            print(item.text(0), item.data(0, Qt.UserRole))
+            if item.data(0, Qt.UserRole) == 'EXTRA':
+                self.ItemTreeView.takeTopLevelItem(i)
+            
         items = list(data.items())
-        row_count = self.ItemTreeView.topLevelItemCount()
+        
+        for i in range(self.ItemTreeView.topLevelItemCount()):
+            if self.ItemTreeView.topLevelItem(i).text(0) in ['', None]:
+                insert_index = i
+                break
+        
+        blank = QTreeWidgetItem()
+        blank.setData(0, Qt.UserRole, 'EXTRA')
+        self.ItemTreeView.insertTopLevelItem(insert_index, blank)
 
-        for row in range(row_count-1):
-            item = self.ItemTreeView.topLevelItem(row+1)
-
-            if row < len(items):
-                key, val = items[row]
-                item.setText(1, f"            {key}: {val}") # added tabs to make it more "right-aligned"
-            else:
-                item.setText(1, "")
+        for key, val in items:
+            new_item = QTreeWidgetItem()
+            new_item.setText(0, f"{key}: {val}")
+            new_item.setData(0, Qt.UserRole, 'EXTRA')
+            self.ItemTreeView.insertTopLevelItem(insert_index+1, new_item)
+            insert_index += 1
 
     def openWiki(self):
         """Load and swap to wiki tab with selected item"""
