@@ -155,14 +155,30 @@ class Window(QtWidgets.QMainWindow):
         exp_drops = exportMenu.addMenu("Drops")
         exp_item = exportMenu.addMenu("Item")
         # TODO: eventually add an option to export to csv too
-        exp_stats.addAction(self.createAction("As txt", lambda: Exporter.ExportTXT(path='o.txt', tab=self.StatsListWidget)))
-        exp_stats.addAction(self.createAction("As json", lambda: Exporter.ExportJSON(path='o.txt', tab=self.StatsListWidget)))
+        exp_stats.addAction(self.createAction("As txt", lambda: self.runExport(self.StatsListWidget, '.txt')))
+        exp_stats.addAction(self.createAction("As json", lambda: self.runExport(self.StatsListWidget, '.json')))
 
-        exp_drops.addAction(self.createAction("As txt", lambda: Exporter.ExportTXT(path='o.txt', tab=self.DropsTreeWidget)))
-        exp_drops.addAction(self.createAction("As json", lambda: Exporter.ExportJSON(path='o.txt', tab=self.DropsTreeWidget)))
+        exp_drops.addAction(self.createAction("As txt", lambda: self.runExport(self.DropsTreeWidget, '.txt')))
+        exp_drops.addAction(self.createAction("As json", lambda: self.runExport(self.DropsTreeWidget, '.json')))
 
-        exp_item.addAction(self.createAction("As txt", lambda: Exporter.ExportTXT(path='o.txt', tab=self.ItemTreeView)))
-        exp_item.addAction(self.createAction("As json", lambda: Exporter.ExportJSON(path='o.txt', tab=self.ItemTreeView)))
+        exp_item.addAction(self.createAction("As txt", lambda: self.runExport(self.ItemTreeView, '.txt')))
+        exp_item.addAction(self.createAction("As json", lambda: self.runExport(self.ItemTreeView, '.json')))
+
+    def runExport(self, tab, mode, path=None):
+        if mode == '.txt':
+            filter_str = "Text Files (*.txt);;All Files (*)"
+            func = Exporter.ExportTXT
+        elif mode == '.json':
+            filter_str = "JSON Files (*.json);;All Files (*)"
+            func = Exporter.ExportJSON
+
+        if not path:
+            path, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", "output"+mode, filter_str)
+            if path:
+                if not path.lower().endswith(mode):
+                    path += mode
+
+                func(path=path, tab=tab)
 
     def showMessageBox(self, title, message):
         msg = QMessageBox(self)
