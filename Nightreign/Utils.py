@@ -76,7 +76,7 @@ class NightreignFunctions():
 
         output = {'Health': ceil(hp),
                  'Runes': NightreignFunctions.getRunes(enemy=enemy, players=players),
-                 'Damage Multiplier': f"{dmg}x",
+                 'Damage Multiplier': f"{dmg:.2f}x",
                  'Stamina Damage Multiplier': f"{stamDmg}x"}
         
         for k,v in baseStats.items():
