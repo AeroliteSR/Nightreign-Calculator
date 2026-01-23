@@ -373,7 +373,8 @@ class Window(QtWidgets.QMainWindow):
 
     def update(self, mutated=None):
         """Update calculated data whenever a field is changed """
-        self.clear()
+        self.DropsTreeWidget.clear()
+        self.StatsListWidget.clear()
         
         enemy = self.parseEnemy()
         if not enemy:
