@@ -96,7 +96,7 @@ class NightreignFunctions():
             output['Affinity'] = Reference.WeaponAffinity.get(data['Affinity'], None)
 
         elif category == 'Attach Effect':
-            data = Effects.AttachEffects.get(itemId, None)
+            data = copy.deepcopy(Effects.AttachEffects).get(itemId, None)
             output['Name'] = Names.AttachEffects.get(data.pop('TextID'), None) # remove so it isnt added later
             value = data['Value']
             isP = data.pop('Is Percentage')
@@ -251,7 +251,7 @@ class NightreignFunctions():
                         entry["Rarity"] = rarity
 
                 elif category == 5:
-                    entry["Name"] = Names.Armor.get(item_id, f"Unknown Relic ({item_id})")
+                    entry["Name"] = Names.Relics.get(item_id, f"Unknown Relic ({item_id})")
 
                 elif category == 1:
                     if item_id in Effects.PermanentBuffs:

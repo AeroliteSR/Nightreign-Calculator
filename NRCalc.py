@@ -1,6 +1,6 @@
 #GUI Reqs
 from PyQt5 import QtGui, QtWidgets, QtCore, QtWebEngineWidgets
-from PyQt5.QtWidgets import QMessageBox, QListWidgetItem, QTreeWidgetItem
+from PyQt5.QtWidgets import QMessageBox, QListWidgetItem, QTreeWidgetItem, QVBoxLayout, QLabel, QRadioButton, QButtonGroup, QComboBox, QPushButton
 from PyQt5.QtGui import QBrush, QColor
 from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtWebEngineWidgets import QWebEngineSettings
@@ -10,11 +10,101 @@ from Nightreign import Enemy
 from Nightreign import Utils
 from Nightreign import Names
 from Nightreign import Weapons
+from Nightreign import Items
+from Nightreign import Magic
+from Nightreign import Effects
 #Other
 from pathlib import Path
-from functools import partial
-import pyperclip
 import json
+
+class FetchDataWindow(QtWidgets.QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Options")
+        self.setFixedSize(250, 250)
+
+        layout = QVBoxLayout()
+        layout.addWidget(QLabel("Type:"))
+        self.radio_table = QRadioButton("Item Table")
+        self.radio_weapon = QRadioButton("Weapon")
+        self.radio_ash = QRadioButton("Ash of War")
+        self.radio_spell = QRadioButton("Spell")
+        self.radio_effect = QRadioButton("Attach Effect")
+        self.radio_table.setChecked(True)
+
+        self.radio_group = QButtonGroup(self)
+        self.radio_group.addButton(self.radio_table)
+        self.radio_group.addButton(self.radio_weapon)
+        self.radio_group.addButton(self.radio_ash)
+        self.radio_group.addButton(self.radio_spell)
+        self.radio_group.addButton(self.radio_effect)
+        self.radio_group.buttonToggled.connect(self.populateComboBox)
+        layout.addWidget(self.radio_table)
+        layout.addWidget(self.radio_weapon)
+        layout.addWidget(self.radio_ash)
+        layout.addWidget(self.radio_spell)
+        layout.addWidget(self.radio_effect)
+
+        layout.addWidget(QLabel("Select Entry:"))
+        self.combo = QComboBox()
+        self.combo.setEditable(True)
+        layout.addWidget(self.combo)
+
+        ok_button = QPushButton("Load")
+        ok_button.clicked.connect(self.run)
+        layout.addWidget(ok_button)
+        self.setLayout(layout)
+
+        #self.combo.setCurrentIndex(-1)
+        self.populateComboBox()
+
+    def populateComboBox(self): # messy asl
+        self.combo.clear()
+
+        if self.radio_table.isChecked():
+            for idx in Items.ItemTable.keys():
+                self.combo.addItem(f"Table {idx}", idx)
+
+        elif self.radio_weapon.isChecked():
+            for idx, entry in Weapons.CustomWeapons.items():
+                name = Names.Weapon.get(entry['Weapon'], None)
+                if name:
+                    self.combo.addItem(name, {"category": 6, "id": idx})
+        
+        elif self.radio_ash.isChecked():
+            for idx, entry in Weapons.AshOfWar.items():
+                name = Names.AshOfWar.get(entry['Name'], None)
+                if name:
+                    self.combo.addItem(name, {'category': 'Ash of War', 'id': idx})
+        
+        elif self.radio_spell.isChecked():
+            for idx, entry in Magic.Magic.items():
+                name = Names.Magic.get(idx, None)
+                if name:
+                    self.combo.addItem(name, {'category': 'Magic', 'id': idx})
+
+        elif self.radio_effect.isChecked():
+            for idx, entry in Effects.AttachEffects.items():
+                name = Names.AttachEffects.get(entry['TextID'])
+                if name:
+                    self.combo.addItem(name, {'category': 'Attach Effect', 'id': idx})
+        
+    def run(self):
+        if self.radio_table.isChecked():
+            table = Items.ItemTable.get(self.combo.currentData())
+            cleaned = Utils.NightreignFunctions.cleanItemlot(table)
+            data = Utils.NightreignFunctions.parseItemTable(table=cleaned)
+            ui.DropsTreeWidget.clear()
+            ui.populateDropsRoot({"Table": data})
+            ui.DataTabs.setCurrentIndex(1)
+            self.accept() # breaks here, only continues if not
+            return
+
+        cat, _id = self.combo.currentData().values()
+        ui.ItemTreeView.clear()
+        ui.parseItemInfo(category=cat, itemid=_id)
+        ui.DataTabs.setCurrentIndex(2)
+        self.accept()
 
 class Exporter:
     @staticmethod
@@ -110,7 +200,6 @@ class Exporter:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
 
-
 class Window(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
@@ -151,6 +240,7 @@ class Window(QtWidgets.QMainWindow):
         infomenu.addAction("Credits", lambda: self.showMessageBox("Credits",
             "<a href='https://linktr.ee/aerolitesr'>Aero</a> - Me! :D<br><br>"))
         
+        fileMenu.addAction(self.createAction("Clear Data", self.clear))
         exp_stats = exportMenu.addMenu("Stats")
         exp_drops = exportMenu.addMenu("Drops")
         exp_item = exportMenu.addMenu("Item")
@@ -472,6 +562,7 @@ class Window(QtWidgets.QMainWindow):
                 self.ItemTreeView.takeTopLevelItem(i)
             
         items = list(data.items())
+        insert_index = 0
         
         for i in range(self.ItemTreeView.topLevelItemCount()):
             if self.ItemTreeView.topLevelItem(i).text(0) in ['', None]:
@@ -509,6 +600,10 @@ class Window(QtWidgets.QMainWindow):
             self.webEngineView.setUrl(URL)
         else:
             self.showError(f'Requested item: [{selection}] is not a valid URL')
+
+    def loadCustomData(self):
+        dialog = FetchDataWindow()
+        dialog.exec_()
 
     def update(self, mutated=None):
         """Update calculated data whenever a field is changed """
@@ -664,10 +759,10 @@ class Window(QtWidgets.QMainWindow):
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(self.expandCollapseTree)
 
-        self.pushButton_2 = QtWidgets.QPushButton("Clear Data", Form)
+        self.pushButton_2 = QtWidgets.QPushButton("Load Data", Form)
         self.pushButton_2.setGeometry(QtCore.QRect(300, 60, 121, 31))
         self.pushButton_2.setObjectName("pushButton_2")
-        self.pushButton_2.clicked.connect(self.clear)
+        self.pushButton_2.clicked.connect(self.loadCustomData)
 
         self.pushButton_3 = QtWidgets.QPushButton("Load Selected Item", Form)
         self.pushButton_3.setGeometry(QtCore.QRect(430, 100, 121, 31))
