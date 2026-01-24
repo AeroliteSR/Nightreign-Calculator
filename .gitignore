@@ -17,6 +17,7 @@ calc.ui
 CSVS/
 .gitignore
 App/
+*.dist
 
 # Distribution / packaging
 .Python

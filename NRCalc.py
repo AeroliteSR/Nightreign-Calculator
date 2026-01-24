@@ -811,3 +811,4 @@ if __name__ == "__main__":
     sys.exit(app.exec_())
 
 # pyinstaller NRCalc.py --noconsole --icon=calc.ico --add-data "calc.ico;." --add-data "lacie.png;."
+# nuitka --standalone --onefile --windows-console-mode=disable --enable-plugin=pyqt5 --windows-icon-from-ico=calc.ico --include-data-file=calc.ico=calc.ico --include-data-file=lacie.png=lacie.png --msvc=latest --lto=yes NRCalc.py
