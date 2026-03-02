@@ -1,4 +1,4 @@
-Magic = {
+Magic = { # updated as of 1.03.2
 90: {'Type': 0, 'Primary Category': None, 'Secondary Category': None, 'FP Consumption': 0, 'Additional FP Consumption': 0, 'Stamina Consumption': 0, 'Additional Stamina Consumption': 0}, 
 4000: {'Type': 0, 'Primary Category': None, 'Secondary Category': None, 'FP Consumption': 7, 'Additional FP Consumption': 0, 'Stamina Consumption': 20, 'Additional Stamina Consumption': 0}, 
 4001: {'Type': 0, 'Primary Category': None, 'Secondary Category': None, 'FP Consumption': 12, 'Additional FP Consumption': 0, 'Stamina Consumption': 26, 'Additional Stamina Consumption': 0}, 
