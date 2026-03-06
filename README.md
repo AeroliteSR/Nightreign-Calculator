@@ -2,7 +2,7 @@
 ## This repository also contains all of the data that was mined and used during the creation of this project. 
 
 ### Requirements:
-pip install PyQt5 pyperclip
+pip install PySide6 pyperclip
 
 # Usage:
 Select an enemy and the conditions you want and the calculated data will populate the lower tabs in the GUI.  
@@ -11,7 +11,9 @@ The `Drops` tab contains possible loot from killing the enemy, displayed in a da
 The `Item` tab shows information regarding a loaded item. This includes: rarity, attributes, damage types, possible ashes of war, possible effects, and possible spells that could be on the weapon. Selecting a spell/effect/ash of war and pressing `Load Selected Item` again will show additional information for what you select.  
 The `Wiki` tab is a built in web engine view that by default opens on the Fextralife wiki page for Nightreign. You will see a "404 Access Denied" error if the item you selected doesn't have a wiki page.  
   
-### Pressing `Load Data` will open a window that allows you to manually load any data available in the calculator, regardless of the currently selected enemy.
+### Pressing `Load Data` will open a window that allows you to manually load any data available in the calculator, regardless of the currently selected enemy.  
+  
+### Any loaded data can be exported to either txt or json format via the file menu.
 
 ## Notes:
  - You can input NpcParamIds to view statistics for basic enemies that aren't listed by using the Entity ID field.

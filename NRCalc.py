@@ -1,9 +1,10 @@
 #GUI Reqs
-from PyQt5 import QtGui, QtWidgets, QtCore, QtWebEngineWidgets
-from PyQt5.QtWidgets import QMessageBox, QListWidgetItem, QTreeWidgetItem, QVBoxLayout, QLabel, QRadioButton, QButtonGroup, QComboBox, QPushButton
-from PyQt5.QtGui import QBrush, QColor
-from PyQt5.QtCore import QUrl, Qt
-from PyQt5.QtWebEngineWidgets import QWebEngineSettings
+from PySide6.QtWidgets import (QMessageBox, QListWidgetItem, QTreeWidgetItem, QVBoxLayout, 
+QLabel, QRadioButton, QButtonGroup, QComboBox, QPushButton, QListWidget, QTreeWidget, QDialog,
+QMainWindow, QLineEdit, QFileDialog, QHeaderView, QFrame, QWidget, QTabWidget, QApplication, QCheckBox)
+from PySide6.QtGui import QBrush, QColor, QAction, QPixmap, QIcon
+from PySide6.QtCore import QUrl, Qt, QCoreApplication, QRect, QMetaObject
+from PySide6.QtWebEngineWidgets import QWebEngineView
 #NR Data and functions
 from Nightreign import Reference
 from Nightreign import Enemy
@@ -17,7 +18,7 @@ from Nightreign import Effects
 from pathlib import Path
 import json
 
-class FetchDataWindow(QtWidgets.QDialog):
+class FetchDataWindow(QDialog):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Options")
@@ -117,7 +118,7 @@ class Exporter:
         return name
 
     @staticmethod
-    def tree2dict(item: QtWidgets.QTreeWidgetItem):
+    def tree2dict(item: QTreeWidgetItem):
         text = item.text(0)
         if not text:
             return
@@ -163,11 +164,11 @@ class Exporter:
     def ExportTXT(path: str, tab):
         with open(path, "w", encoding="utf-8") as file:
 
-            if isinstance(tab, QtWidgets.QListWidget):
+            if isinstance(tab, QListWidget):
                 for i in range(tab.count()):
                     file.write(tab.item(i).text() + "\n")
 
-            elif isinstance(tab, QtWidgets.QTreeWidget):
+            elif isinstance(tab, QTreeWidget):
                 for i in range(tab.topLevelItemCount()):
                     for line in Exporter.tree2text(tab.topLevelItem(i)):
                         file.write(line + "\n")
@@ -177,7 +178,7 @@ class Exporter:
 
     @staticmethod
     def ExportJSON(path: str, tab):
-        if isinstance(tab, QtWidgets.QListWidget):
+        if isinstance(tab, QListWidget):
             data = {}
             for i in range(tab.count()):
                 item_text = tab.item(i).text()
@@ -187,7 +188,7 @@ class Exporter:
                     k, v = "Name", item_text.replace('\n', '')
                 data[k] = v
 
-        elif isinstance(tab, QtWidgets.QTreeWidget):
+        elif isinstance(tab, QTreeWidget):
             data = []
             for i in range(tab.topLevelItemCount()):
                 _dict = Exporter.tree2dict(tab.topLevelItem(i))
@@ -200,25 +201,16 @@ class Exporter:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
 
-class Window(QtWidgets.QMainWindow):
+class Window(QMainWindow):
     def __init__(self):
         super().__init__()
         self.Functions = Utils.NightreignFunctions()
         self.setupUi(self)
         self.createMenus()
-        # random shit for the wiki page
-        profile = self.webEngineView.page().profile()
-        profile.setHttpCacheType(profile.MemoryHttpCache)
-        profile.setPersistentCookiesPolicy(profile.NoPersistentCookies)
-        settings = self.webEngineView.settings()
-        settings.setAttribute(QWebEngineSettings.JavascriptEnabled, True)
-        settings.setAttribute(QWebEngineSettings.PluginsEnabled, False)
-        settings.setAttribute(QWebEngineSettings.LocalStorageEnabled, True)
-        settings.setAttribute(QWebEngineSettings.JavascriptCanOpenWindows, False)
-        settings.setAttribute(QWebEngineSettings.FullScreenSupportEnabled, False)
 
     def createMenus(self):
         menubar = self.menuBar()
+        menubar.setStyleSheet("""QMenuBar::item {padding: 0px 10px;}""")
         fileMenu = menubar.addMenu("File")
         exportMenu = fileMenu.addMenu('Export')
         infomenu = menubar.addMenu("Info")
@@ -263,7 +255,7 @@ class Window(QtWidgets.QMainWindow):
             func = Exporter.ExportJSON
 
         if not path:
-            path, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", "output"+mode, filter_str)
+            path, _ = QFileDialog.getSaveFileName(self, "Save File", "output"+mode, filter_str)
             if path:
                 if not path.lower().endswith(mode):
                     path += mode
@@ -273,19 +265,19 @@ class Window(QtWidgets.QMainWindow):
     def showMessageBox(self, title, message):
         msg = QMessageBox(self)
         msg.setWindowTitle(title)
-        msg.setTextFormat(QtCore.Qt.RichText)
+        msg.setTextFormat(Qt.RichText)
         msg.setText(message)
-        msg.exec_()
+        msg.exec()
 
     def showError(self, text):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Critical)
         msg.setWindowTitle("Error") 
         msg.setText(text) 
-        msg.exec_() 
+        msg.exec() 
 
     def createAction(self, name, func):
-        action = QtWidgets.QAction(name, self)
+        action = QAction(name, self)
         action.triggered.connect(func)
         return action
    
@@ -293,13 +285,13 @@ class Window(QtWidgets.QMainWindow):
         """Fill out the enemy dropdown list with loaded data"""
         for index, i in enumerate(self.enemiesList):
             self.EnemyComboBox.addItem("") # add enough blank entries for all enemies
-            self.EnemyComboBox.setItemText(index, QtCore.QCoreApplication.translate("Form", f"{i}")) # add all enemies to the combobox
+            self.EnemyComboBox.setItemText(index, QCoreApplication.translate("Form", f"{i}")) # add all enemies to the combobox
         self.EnemyComboBox.setCurrentIndex(-1)
 
     def createUnselectableItem(self, text, itemType):
         """Makes an item of set type that cant be selected"""
         item = itemType(text)
-        item.setFlags(item.flags() & ~QtCore.Qt.ItemIsSelectable)
+        item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
         return item
 
     def parseEnemy(self):
@@ -343,13 +335,13 @@ class Window(QtWidgets.QMainWindow):
         """Setting up the tree for drops"""
 
         for slot_name, items in drops_dict.items():
-            slot_item = QtWidgets.QTreeWidgetItem([slot_name])
-            slot_item.setFlags(slot_item.flags() & ~QtCore.Qt.ItemIsSelectable)
+            slot_item = QTreeWidgetItem([slot_name])
+            slot_item.setFlags(slot_item.flags() & ~Qt.ItemIsSelectable)
             slot_item.setForeground(0, QBrush(QColor("#ff9100")))
             self.DropsTreeWidget.addTopLevelItem(slot_item)
 
-            blank_item = QtWidgets.QTreeWidgetItem([])
-            blank_item.setFlags(blank_item.flags() & ~QtCore.Qt.ItemIsSelectable)
+            blank_item = QTreeWidgetItem([])
+            blank_item.setFlags(blank_item.flags() & ~Qt.ItemIsSelectable)
             self.DropsTreeWidget.addTopLevelItem(blank_item)
 
             self.populateDropsTree(items, slot_item)
@@ -360,8 +352,8 @@ class Window(QtWidgets.QMainWindow):
 
         if isinstance(data, dict):
             for key, sublist in data.items():
-                subheader = QtWidgets.QTreeWidgetItem([f"Lot {key}"])
-                subheader.setFlags(subheader.flags() & ~QtCore.Qt.ItemIsSelectable)
+                subheader = QTreeWidgetItem([f"Lot {key}"])
+                subheader.setFlags(subheader.flags() & ~Qt.ItemIsSelectable)
                 subheader.setForeground(0, QBrush(QColor("#00aaff")))
                 if parent is None:
                     self.DropsTreeWidget.addTopLevelItem(subheader)
@@ -381,7 +373,7 @@ class Window(QtWidgets.QMainWindow):
             discovery = item.get("Discovery", '')
 
             try:
-                color = Reference.RarityColor.get(item.get('Rarity'), "#000000")
+                color = Reference.RarityColor.get(item.get('Rarity'), "#B8B8B8")
             except KeyError:
                 pass
 
@@ -392,23 +384,23 @@ class Window(QtWidgets.QMainWindow):
                 else:
                     chance = temp_chance # quick check for if chance is less than 0.01, in which case give an extra point of precision
 
-                tree_item = QtWidgets.QTreeWidgetItem([name, chance, count, char, discovery])
+                tree_item = QTreeWidgetItem([name, chance, count, char, discovery])
                 tree_item.setForeground(0, QBrush(QColor(color)))
 
                 if name.startswith("Table "):
-                    tree_item.setFlags(tree_item.flags() & ~QtCore.Qt.ItemIsSelectable)
+                    tree_item.setFlags(tree_item.flags() & ~Qt.ItemIsSelectable)
 
                 if parent is None: # for the "__ slot #_" entries
-                    tree_item.setFlags(tree_item.flags() & ~QtCore.Qt.ItemIsSelectable)
+                    tree_item.setFlags(tree_item.flags() & ~Qt.ItemIsSelectable)
                     self.DropsTreeWidget.addTopLevelItem(tree_item)
 
-                    blank_item = QtWidgets.QTreeWidgetItem([])
-                    blank_item.setFlags(blank_item.flags() & ~QtCore.Qt.ItemIsSelectable)
+                    blank_item = QTreeWidgetItem([])
+                    blank_item.setFlags(blank_item.flags() & ~Qt.ItemIsSelectable)
                     self.DropsTreeWidget.addTopLevelItem(blank_item)
 
                 else:
-                    tree_item.setData(0, QtCore.Qt.UserRole, item.get("Category"))
-                    tree_item.setData(0, QtCore.Qt.UserRole+1, item.get("ItemID"))
+                    tree_item.setData(0, Qt.UserRole, item.get("Category"))
+                    tree_item.setData(0, Qt.UserRole+1, item.get("ItemID"))
                     parent.addChild(tree_item)
 
                 children = item.get("Children", [])
@@ -465,7 +457,7 @@ class Window(QtWidgets.QMainWindow):
             self.showError(f"Cannot load item of type: {Reference.ItemCategories[category]}\n\nTry \"Open Wiki\"")
             return
 
-        self.ItemTreeView.addTopLevelItem(QtWidgets.QTreeWidgetItem([f"{name}"]))
+        self.ItemTreeView.addTopLevelItem(QTreeWidgetItem([f"{name}"]))
         ashes = data.pop('Possible Ashes of War')
         effects = data.pop('Possible Effects')
         spells = data.pop('Possible Spells')
@@ -493,8 +485,8 @@ class Window(QtWidgets.QMainWindow):
             return
 
         try:
-            category = selection.data(0, QtCore.Qt.UserRole)
-            itemid = selection.data(0, QtCore.Qt.UserRole + 1)
+            category = selection.data(0, Qt.UserRole)
+            itemid = selection.data(0, Qt.UserRole + 1)
             #print(category, itemid) # 4 debug
 
             if itemid and category:
@@ -511,13 +503,13 @@ class Window(QtWidgets.QMainWindow):
         self.ItemTreeView.clear()
         self.ItemTreeView.setHeaderLabels(["Item", "Chance"])
         header = self.ItemTreeView.header()
-        header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.Stretch)
 
     def addItemSection(self, title, color="#971a44"):
         """Dropdown trees for data parsed below"""
-        header = QtWidgets.QTreeWidgetItem([title, ''])
-        header.setFlags(header.flags() & ~QtCore.Qt.ItemIsSelectable)
+        header = QTreeWidgetItem([title, ''])
+        header.setFlags(header.flags() & ~Qt.ItemIsSelectable)
         header.setForeground(0, QBrush(QColor(color)))
         self.ItemTreeView.addTopLevelItem(header)
         return header
@@ -526,14 +518,14 @@ class Window(QtWidgets.QMainWindow):
         """Chances for effects etc. for each item"""
         if isinstance(data, dict):
             if 'ID' in data and 'Weight' in data:
-                leaf = QtWidgets.QTreeWidgetItem([str(data['Name']), str(data['Weight'])])
-                leaf.setData(0, QtCore.Qt.UserRole, data['Category'])
-                leaf.setData(0, QtCore.Qt.UserRole+1, data['ID'])
+                leaf = QTreeWidgetItem([str(data['Name']), str(data['Weight'])])
+                leaf.setData(0, Qt.UserRole, data['Category'])
+                leaf.setData(0, Qt.UserRole+1, data['ID'])
                 parent.addChild(leaf)
             else:
                 for key, value in data.items():
-                    subheader = QtWidgets.QTreeWidgetItem([str(key), ''])
-                    subheader.setFlags(subheader.flags() & ~QtCore.Qt.ItemIsSelectable)
+                    subheader = QTreeWidgetItem([str(key), ''])
+                    subheader.setFlags(subheader.flags() & ~Qt.ItemIsSelectable)
                     subheader.setForeground(0, QBrush(QColor("#971a44")))
                     parent.addChild(subheader)
                     self.populateItemChances(value, subheader)
@@ -547,8 +539,8 @@ class Window(QtWidgets.QMainWindow):
         self.statRows = []
 
         for key, value in stats_dict.items():
-            item = QtWidgets.QTreeWidgetItem([f"{key}: {value}", ''])
-            item.setFlags(item.flags() & ~QtCore.Qt.ItemIsSelectable)
+            item = QTreeWidgetItem([f"{key}: {value}", ''])
+            item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
 
             self.ItemTreeView.addTopLevelItem(item)
             self.statRows.append(item)
@@ -595,7 +587,7 @@ class Window(QtWidgets.QMainWindow):
             return
 
         if selection:
-            URL = QUrl(f"https://eldenringnightreign.wiki.fextralife.com/{selection.replace(" ", '+')}")
+            URL = QUrl(f"https://eldenringnightreign.wiki.fextralife.com/{selection.replace(' ', '+')}")
             self.DataTabs.setCurrentIndex(3)
             self.webEngineView.setUrl(URL)
         else:
@@ -603,7 +595,7 @@ class Window(QtWidgets.QMainWindow):
 
     def loadCustomData(self):
         dialog = FetchDataWindow()
-        dialog.exec_()
+        dialog.exec()
 
     def update(self):
         """Update calculated data whenever a field is changed """
@@ -630,101 +622,101 @@ class Window(QtWidgets.QMainWindow):
         Form.setWindowTitle("Nightreign Calculator")
 
         # day 1/2
-        self.timeComboBox = QtWidgets.QComboBox(Form)
-        self.timeComboBox.setGeometry(QtCore.QRect(70, 110, 111, 22))
+        self.timeComboBox = QComboBox(Form)
+        self.timeComboBox.setGeometry(QRect(70, 110, 111, 22))
         self.timeComboBox.setObjectName("timeComboBox")
-        self.timeComboBox.activated[str].connect(self.update)
+        self.timeComboBox.activated.connect(self.update)
         self.timeComboBox.addItem("Day 1")
         self.timeComboBox.addItem("Day 2")
 
         # id entry
-        self.enemyIdLineEdit = QtWidgets.QLineEdit(Form)
-        self.enemyIdLineEdit.setGeometry(QtCore.QRect(70, 50, 211, 20))
+        self.enemyIdLineEdit = QLineEdit(Form)
+        self.enemyIdLineEdit.setGeometry(QRect(70, 50, 211, 20))
         self.enemyIdLineEdit.setToolTip("")
         self.enemyIdLineEdit.setPlaceholderText("*Optional")
         self.enemyIdLineEdit.setObjectName("enemyIdLineEdit")
         self.enemyIdLineEdit.returnPressed.connect(self.update)
 
         # enemy list (I actually used this)
-        self.EnemyComboBox = QtWidgets.QComboBox(Form)
-        self.EnemyComboBox.setGeometry(QtCore.QRect(70, 23, 481, 22))
+        self.EnemyComboBox = QComboBox(Form)
+        self.EnemyComboBox.setGeometry(QRect(70, 23, 481, 22))
         self.EnemyComboBox.setToolTip("List of common bosses and minibosses")
         self.EnemyComboBox.setEditable(True)
         self.EnemyComboBox.setObjectName("EnemyComboBox")
-        self.EnemyComboBox.activated[str].connect(self.update)
+        self.EnemyComboBox.activated.connect(self.update)
         # setup list of named enemies
         for name, id in Enemy.PremadeEnemyList.items():
             self.EnemyComboBox.addItem(name, id)
 
         # labels
-        self.EnemyLabel = QtWidgets.QLabel("Enemy:", Form)
-        self.EnemyLabel.setGeometry(QtCore.QRect(20, 23, 41, 21))
+        self.EnemyLabel = QLabel("Enemy:", Form)
+        self.EnemyLabel.setGeometry(QRect(20, 23, 41, 21))
         self.EnemyLabel.setToolTip("List of common bosses and minibosses")
         self.EnemyLabel.setObjectName("EnemyLabel")
 
-        self.EntityIDLabel = QtWidgets.QLabel("Entity ID:", Form)
-        self.EntityIDLabel.setGeometry(QtCore.QRect(20, 50, 51, 21))
+        self.EntityIDLabel = QLabel("Entity ID:", Form)
+        self.EntityIDLabel.setGeometry(QRect(20, 50, 51, 21))
         self.EntityIDLabel.setToolTip("Optional override for enemies not listed above")
         self.EntityIDLabel.setObjectName("EntityIDLabel")
 
-        self.NGLabel = QtWidgets.QLabel("Mode:", Form)
-        self.NGLabel.setGeometry(QtCore.QRect(20, 80, 51, 21))
+        self.NGLabel = QLabel("Mode:", Form)
+        self.NGLabel.setGeometry(QRect(20, 80, 51, 21))
         self.NGLabel.setToolTip("NG+ Scaling for calculations")
         self.NGLabel.setObjectName("NGLabel")
 
-        self.TimeLabel = QtWidgets.QLabel("Time:", Form)
-        self.TimeLabel.setGeometry(QtCore.QRect(20, 110, 51, 21))
+        self.TimeLabel = QLabel("Time:", Form)
+        self.TimeLabel.setGeometry(QRect(20, 110, 51, 21))
         self.TimeLabel.setToolTip("Game Time")
         self.TimeLabel.setObjectName("TimeLabel")
 
         # random lines for ui
-        self.line = QtWidgets.QFrame(Form)
-        self.line.setGeometry(QtCore.QRect(176, 80, 16, 61))
-        self.line.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.line.setFrameShape(QtWidgets.QFrame.VLine)
+        self.line = QFrame(Form)
+        self.line.setGeometry(QRect(178, 80, 16, 61))
+        self.line.setFrameShadow(QFrame.Plain)
+        self.line.setFrameShape(QFrame.VLine)
         self.line.setObjectName("line")
 
-        self.line_2 = QtWidgets.QFrame(Form)
-        self.line_2.setGeometry(QtCore.QRect(20, 130, 621, 21))
-        self.line_2.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.line_2.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line_2 = QFrame(Form)
+        self.line_2.setGeometry(QRect(20, 130, 621, 21))
+        self.line_2.setFrameShadow(QFrame.Plain)
+        self.line_2.setFrameShape(QFrame.HLine)
         self.line_2.setObjectName("line_2")
 
-        self.line_3 = QtWidgets.QFrame(Form)
-        self.line_3.setGeometry(QtCore.QRect(280, 50, 20, 91))
-        self.line_3.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.line_3.setFrameShape(QtWidgets.QFrame.VLine)
+        self.line_3 = QFrame(Form)
+        self.line_3.setGeometry(QRect(285, 50, 20, 91))
+        self.line_3.setFrameShadow(QFrame.Plain)
+        self.line_3.setFrameShape(QFrame.VLine)
         self.line_3.setObjectName("line_3")
 
         # game mode
-        self.GameModeComboBox = QtWidgets.QComboBox(Form)
-        self.GameModeComboBox.setGeometry(QtCore.QRect(70, 80, 111, 22))
+        self.GameModeComboBox = QComboBox(Form)
+        self.GameModeComboBox.setGeometry(QRect(70, 80, 111, 22))
         self.GameModeComboBox.setToolTip("Current Game Mode")
         self.GameModeComboBox.setObjectName("GameModeComboBox")
         self.GameModeComboBox.addItems(["Normal", "Depth 1", "Depth 2", "Depth 3", "Depth 4", "Depth 5"])
-        self.GameModeComboBox.activated[str].connect(self.update)
+        self.GameModeComboBox.activated.connect(self.update)
 
         # tabs system
-        self.DataTabs = QtWidgets.QTabWidget(Form)
-        self.DataTabs.setGeometry(QtCore.QRect(20, 150, 621, 430))
+        self.DataTabs = QTabWidget(Form)
+        self.DataTabs.setGeometry(QRect(20, 150, 621, 430))
         self.DataTabs.setToolTipDuration(-1)
         self.DataTabs.setObjectName("DataTabs")
 
         # stats tab
-        self.tab = QtWidgets.QWidget()
+        self.tab = QWidget()
         self.tab.setObjectName("tab")
-        tab_layout = QtWidgets.QVBoxLayout(self.tab)
+        tab_layout = QVBoxLayout(self.tab)
         tab_layout.setContentsMargins(0, 0, 0, 0)
-        self.StatsListWidget = QtWidgets.QListWidget(self.tab)
+        self.StatsListWidget = QListWidget(self.tab)
         self.StatsListWidget.setObjectName("StatsListWidget")
         tab_layout.addWidget(self.StatsListWidget)
         self.DataTabs.addTab(self.tab, "Stats")
 
         # drops tab
-        self.tab_2 = QtWidgets.QWidget()
-        drops_layout = QtWidgets.QVBoxLayout(self.tab_2)
+        self.tab_2 = QWidget()
+        drops_layout = QVBoxLayout(self.tab_2)
         drops_layout.setContentsMargins(0, 0, 0, 0)
-        self.DropsTreeWidget = QtWidgets.QTreeWidget()
+        self.DropsTreeWidget = QTreeWidget()
         self.DropsTreeWidget.setHeaderLabels(["Item / Table", "Chance", "Count", "Class", "Item Discovery"])
         self.DropsTreeWidget.setColumnWidth(0, 250)
         self.DropsTreeWidget.setColumnWidth(1, 75)
@@ -735,62 +727,62 @@ class Window(QtWidgets.QMainWindow):
         self.DataTabs.addTab(self.tab_2, "Drops")
 
         # item tab
-        self.tab_3 = QtWidgets.QWidget()
-        item_layout = QtWidgets.QVBoxLayout(self.tab_3)
+        self.tab_3 = QWidget()
+        item_layout = QVBoxLayout(self.tab_3)
         item_layout.setContentsMargins(0, 0, 0, 0)
-        self.ItemTreeView = QtWidgets.QTreeWidget()
+        self.ItemTreeView = QTreeWidget()
         self.ItemTreeView.setHeaderHidden(True)
         item_layout.addWidget(self.ItemTreeView)
         self.DataTabs.addTab(self.tab_3, "Item")
 
         # wiki tab
-        self.tab_4 = QtWidgets.QWidget()
+        self.tab_4 = QWidget()
         self.tab_4.setObjectName("tab_4")
-        self.webEngineView = QtWebEngineWidgets.QWebEngineView(self.tab_4)
-        self.webEngineView.setGeometry(QtCore.QRect(0, 0, 621, 430))
-        self.webEngineView.setUrl(QtCore.QUrl("about:blank"))
+        self.webEngineView = QWebEngineView(self.tab_4)
+        self.webEngineView.setGeometry(QRect(0, 0, 621, 430))
+        self.webEngineView.setUrl(QUrl("about:blank"))
         self.webEngineView.setObjectName("webEngineView")
         self.DataTabs.addTab(self.tab_4, "Wiki")
 
         # buttons (too lazy to rename them)
-        self.pushButton = QtWidgets.QPushButton("Expand/Collapse", Form)
-        self.pushButton.setGeometry(QtCore.QRect(300, 100, 121, 31))
+        self.pushButton = QPushButton("Expand/Collapse", Form)
+        self.pushButton.setGeometry(QRect(300, 100, 121, 31))
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(self.expandCollapseTree)
 
-        self.pushButton_2 = QtWidgets.QPushButton("Load Data", Form)
-        self.pushButton_2.setGeometry(QtCore.QRect(300, 60, 121, 31))
+        self.pushButton_2 = QPushButton("Load Data", Form)
+        self.pushButton_2.setGeometry(QRect(300, 60, 121, 31))
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_2.clicked.connect(self.loadCustomData)
 
-        self.pushButton_3 = QtWidgets.QPushButton("Load Selected Item", Form)
-        self.pushButton_3.setGeometry(QtCore.QRect(430, 100, 121, 31))
+        self.pushButton_3 = QPushButton("Load Selected Item", Form)
+        self.pushButton_3.setGeometry(QRect(430, 100, 121, 31))
         self.pushButton_3.setObjectName("pushButton_3")
         self.pushButton_3.clicked.connect(self.loadItem)
 
-        self.pushButton_4 = QtWidgets.QPushButton("Open Wiki", Form)
-        self.pushButton_4.setGeometry(QtCore.QRect(430, 60, 121, 31))
+        self.pushButton_4 = QPushButton("Open Wiki", Form)
+        self.pushButton_4.setGeometry(QRect(430, 60, 121, 31))
         self.pushButton_4.setObjectName("pushButton_4")
         self.pushButton_4.clicked.connect(self.openWiki)
 
         # meme image
         global basepath
-        label = QtWidgets.QLabel(self)
-        label.setGeometry(QtCore.QRect(555, 23, 85, 111))
-        pixmap = QtGui.QPixmap(str(basepath / "lacie.png"))
-        label.setPixmap(pixmap.scaled(label.size(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation))
-        label.setAlignment(QtCore.Qt.AlignCenter)
+        label = QLabel(self)
+        label.setGeometry(QRect(555, 23, 85, 111))
+        pixmap = QPixmap(str(basepath / "lacie.png"))
+        label.setPixmap(pixmap.scaled(label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        label.setAlignment(Qt.AlignCenter)
 
         # player count
-        self.comboBox = QtWidgets.QComboBox(Form)
-        self.comboBox.setGeometry(QtCore.QRect(190, 80, 91, 22))
+        self.comboBox = QComboBox(Form)
+        self.comboBox.setGeometry(QRect(190, 80, 100, 30))
         self.comboBox.setObjectName("comboBox")
-        self.comboBox.activated[str].connect(self.update)
+        self.comboBox.activated.connect(self.update)
         self.comboBox.addItems(["Solo", "Duos", "Trios"])
 
         # mutation
-        self.checkBox = QtWidgets.QCheckBox("Is Mutated", Form)
-        self.checkBox.setGeometry(QtCore.QRect(200, 110, 81, 21))
+        self.checkBox = QCheckBox("Is Mutated", Form)
+        self.checkBox.setGeometry(QRect(190, 115, 90, 21))
         self.checkBox.setChecked(False)
         self.checkBox.toggled[bool].connect(self.update)
 
@@ -798,16 +790,16 @@ class Window(QtWidgets.QMainWindow):
         self.EnemyComboBox.setCurrentIndex(-1)
         self.DataTabs.setCurrentIndex(0)
 
-        QtCore.QMetaObject.connectSlotsByName(Form)
+        QMetaObject.connectSlotsByName(Form)
 
 if __name__ == "__main__":
     import sys
-    app = QtWidgets.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     basepath = Path(sys.argv[0]).parent
-    app.setWindowIcon(QtGui.QIcon(str(basepath / 'calc.ico')))
+    app.setWindowIcon(QIcon(str(basepath / 'calc.ico')))
     ui = Window()
     ui.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 # pyinstaller NRCalc.py --noconsole --icon=calc.ico --add-data "calc.ico;." --add-data "lacie.png;."
-# nuitka --standalone --onefile --windows-console-mode=disable --enable-plugin=pyqt5 --windows-icon-from-ico=calc.ico --include-data-file=calc.ico=calc.ico --include-data-file=lacie.png=lacie.png --msvc=latest --lto=yes NRCalc.py
+# nuitka --standalone --onefile --windows-console-mode=disable --enable-plugin=pyside6 --windows-icon-from-ico=calc.ico --include-data-file=calc.ico=calc.ico --include-data-file=lacie.png=lacie.png --msvc=latest --lto=yes NRCalc.py
