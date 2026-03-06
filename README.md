@@ -7,7 +7,7 @@ pip install PyQt5 pyperclip
 # Usage:
 Select an enemy and the conditions you want and the calculated data will populate the lower tabs in the GUI.  
 The `Stats` tab contains statistics for the selected enemy, such as affinities, health, and runes.  
-The `Drops` tab contains possible loot from killing the enemy, displayed in a data tree. Itemlots and Tables retain their IDs from the game's params in case you wish to search it up yourself. After selecting an item, you can press `Open Wiki` to attempt to find its wiki page and display it in-app. There are a few issues with the WebEngineView that occassionally causes crashes, which I have yet to fix. Pressing `Load Selected Item` will take you to the `Item` tab.
+The `Drops` tab contains possible loot from killing the enemy, displayed in a data tree. Itemlots and Tables retain their IDs from the game's params in case you wish to search it up yourself. After selecting an item, you can press `Open Wiki` to attempt to find its wiki page and display it in-app. There are a few issues with the WebEngineView that occassionally causes crashes, which I have yet to fix. Pressing `Load Selected Item` will take you to the `Item` tab.  
 The `Item` tab shows information regarding a loaded item. This includes: rarity, attributes, damage types, possible ashes of war, possible effects, and possible spells that could be on the weapon. Selecting a spell/effect/ash of war and pressing `Load Selected Item` again will show additional information for what you select.  
 The `Wiki` tab is a built in web engine view that by default opens on the Fextralife wiki page for Nightreign. You will see a "404 Access Denied" error if the item you selected doesn't have a wiki page.  
   

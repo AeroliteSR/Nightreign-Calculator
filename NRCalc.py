@@ -605,7 +605,7 @@ class Window(QtWidgets.QMainWindow):
         dialog = FetchDataWindow()
         dialog.exec_()
 
-    def update(self, mutated=None):
+    def update(self):
         """Update calculated data whenever a field is changed """
         self.DropsTreeWidget.clear()
         self.StatsListWidget.clear()
@@ -614,8 +614,7 @@ class Window(QtWidgets.QMainWindow):
         if not enemy:
             return
         
-        if mutated is None:
-            mutated = bool(self.checkBox.isChecked())
+        mutated = self.checkBox.isChecked()
 
         mode = self.GameModeComboBox.currentIndex()
         time = self.timeComboBox.currentIndex()+1
@@ -793,7 +792,7 @@ class Window(QtWidgets.QMainWindow):
         self.checkBox = QtWidgets.QCheckBox("Is Mutated", Form)
         self.checkBox.setGeometry(QtCore.QRect(200, 110, 81, 21))
         self.checkBox.setChecked(False)
-        self.checkBox.toggled[bool].connect(lambda state: self.update(mutated=state))
+        self.checkBox.toggled[bool].connect(self.update)
 
         # initial states
         self.EnemyComboBox.setCurrentIndex(-1)
